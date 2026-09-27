@@ -162,6 +162,7 @@ For a detailed comparison of all evaluated candidates, see the [SoC Candidates D
 - [System Requirements](docs/requirements/system-requirements.md)
 - [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md)
 - [i.MX 8M Plus System Architecture](docs/architecture/imx8mp-system-design.md)
+- [PCB Stackup & Impedance Constraints](docs/architecture/pcb-stackup-constraints.md)
 - [Decision Log](docs/decisions/decision-log.md)
 
 ## Contributing / Development Notes

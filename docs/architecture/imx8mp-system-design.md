@@ -125,9 +125,13 @@ When the i.MX 8M Plus boots with a blank eMMC/Flash, its Boot ROM automatically 
 - **Datasheet Ref:** See **i.MX 8M Plus Datasheet, Section 3.9 (uSDHC Electrical Characteristics)** for clock margins.
 - **Why High Capacity:** The i.MX 8M Plus has only a single **PCIe Gen3 lane**. We are explicitly **reserving this PCIe lane** via a standard M.2 slot for high-bandwidth external hardware. This allows the user to plug in a Coral Edge TPU for AI, an M.2 WiFi 6 card, an external GPU, OR an **external M.2 NVMe SSD** if they need terabytes of storage. Because the PCIe lane is a modular expansion slot rather than a hardwired SSD, the onboard eMMC must provide all the primary bulk storage for the OS. Therefore, a massive eMMC (64GB+) is strictly required.
 
-### 4. Configuration Boot Flash (QSPI)
+### 5. Wireless (WiFi / Bluetooth)
+- **Recommendation:** **Ampak AP6256** (or similar Murata 1MW SDIO module).
+- **Why:** We want built-in WiFi, but we cannot use the PCIe lane because it is reserved for the modular M.2 expansion slot. The i.MX 8M Plus features a secondary SDIO interface (`uSDHC2`) which is perfectly suited for high-speed 802.11ac WiFi and Bluetooth 5.0 combos.
+
+### 6. Configuration Boot Flash (QSPI)
 - **Recommendation:** **Macronix MX25L** or **Winbond W25Q series**.
 - **Datasheet Ref:** See **i.MX 8M Plus Reference Manual, Chapter 6 (System Boot)** for the exact boot strapping pin configurations.
 
-### 5. High-Speed Switches / PHYs (Ethernet)
+### 7. High-Speed Switches / PHYs (Ethernet)
 - **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit PHYs with RGMII). These are natively supported by the mainline Linux kernel.
