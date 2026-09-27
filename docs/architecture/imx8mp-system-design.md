@@ -34,66 +34,49 @@ flowchart LR
     classDef memory fill:#00b894,stroke:#55efc4,stroke-width:2px,color:#fff,rx:5px,ry:5px;
     classDef io fill:#e17055,stroke:#fab1a0,stroke-width:2px,color:#fff,rx:5px,ry:5px;
     classDef pwr fill:#d63031,stroke:#ff7675,stroke-width:2px,color:#fff,rx:5px,ry:5px;
-    classDef soc fill:#2d3436,stroke:#636e72,stroke-width:2px,color:#dfe6e9,stroke-dasharray: 5 5;
 
-    %% Left External Connectors
+    %% Left Side: Power & Debug Inputs
     PWR_JACK(["Power Jack / VDC"]):::external
     DEBUG_USB(["Debug USB Type-C"]):::external
-    CAN_CONN(["CAN Bus Connectors"]):::external
-    SPI_CONN(["Sensor Expansion"]):::external
-
-    %% External Support ICs
+    
+    %% Support ICs
     FTDI["FT2232HL USB-to-JTAG/UART"]:::io
+    PMIC["PCA9460 PMIC"]:::pwr
 
-    %% Central SoC Grouping
-    subgraph SOC ["NXP i.MX 8M Plus Architecture"]
-        direction LR
-        
-        %% Internal Nodes
-        PMIC["PCA9460 PMIC"]:::pwr
-        RT["M7 Real-Time Core"]:::core
+    %% The SoC
+    subgraph SOC ["NXP i.MX 8M Plus"]
+        direction TB
         CPU["4x Cortex-A53 Cores"]:::core
+        RT["M7 Real-Time Core"]:::core
         NPU["2.3 TOPS NPU"]:::core
-        RAM["LPDDR4 Memory"]:::memory
-        FLASH["eMMC 5.1 & QSPI"]:::memory
-        
-        %% Combined IO Nodes for cleaner wiring
-        HS_IO["USB 3.0 & PCIe Gen3"]:::io
-        NET_IO["Dual Gigabit MACs (TSN)"]:::io
-        MIPI_IO["Dual MIPI CSI & DSI"]:::io
     end
 
-    %% Right External Connectors
+    %% Internal Subsystems (Grouped right of SoC core)
+    RAM["LPDDR4 Memory"]:::memory
+    FLASH["eMMC 5.1 & QSPI"]:::memory
+    WIFI["SDIO WiFi/BT Module"]:::io
+    
+    %% Right Side: External Interfaces
     USB_PCIE(["USB Type-C & M.2 PCIe"]):::external
     ETH_CONN(["2x RJ45 w/ Magnetics"]):::external
     CAM_DISP(["Camera & Display Panels"]):::external
+    ROBOT_IO(["CAN Bus & SPI Headers"]):::external
 
-    %% Left side routing
+    %% Routing logic (Strict Left-to-Right to prevent tangling)
     PWR_JACK --> PMIC
-    DEBUG_USB <--> FTDI
-    FTDI <-->|JTAG| RT
-    FTDI <-->|UART| CPU
-    CAN_CONN <--> RT
-    SPI_CONN <--> CPU
-
-    %% Internal routing (Core logic)
-    PMIC --> CPU
-    PMIC -.-> RAM
-    PMIC -.-> FLASH
+    PMIC --> SOC
     
-    CPU <--> RT
-    CPU <--> NPU
-    CPU <--> RAM
-    CPU <--> FLASH
-    
-    CPU <--> HS_IO
-    CPU <--> NET_IO
-    CPU <--> MIPI_IO
+    DEBUG_USB --- FTDI
+    FTDI -->|JTAG & UART| SOC
 
-    %% Right side routing
-    HS_IO <--> USB_PCIE
-    NET_IO <--> ETH_CONN
-    MIPI_IO <--> CAM_DISP
+    SOC --- RAM
+    SOC --- FLASH
+    SOC --- WIFI
+
+    SOC -->|PCIe / USB| USB_PCIE
+    SOC -->|RGMII| ETH_CONN
+    SOC -->|MIPI| CAM_DISP
+    SOC -->|I2C / SPI / CAN| ROBOT_IO
 ```
 
 ---
