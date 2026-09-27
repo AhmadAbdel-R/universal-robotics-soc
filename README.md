@@ -129,6 +129,7 @@ To keep navigation simple while in the architecture phase, the repository is cur
 - [docs/architecture/](docs/architecture/) - High-level system design, stackup constraints, and block diagrams.
 - [docs/requirements/](docs/requirements/) - Mission parameters and system constraints.
 - [docs/decisions/](docs/decisions/) - Architectural Decision Records (ADRs) and component evaluation logs.
+- [references/datasheets/](references/datasheets/) - Raw PDF datasheets for the core SoC.
 
 ## Development Roadmap
 

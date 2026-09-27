@@ -20,6 +20,7 @@ We pivoted to the **i.MX 8M Plus** because:
 ### Vendor Links & Sourcing Strategy
 - **LCSC Page (Native Stock):** [LCSC MIMX8ML8CVNKZAB](https://www.lcsc.com/product-detail/Processors-Microcontrollers-MCUs_NXP-Semiconductors-MIMX8ML8CVNKZAB_C2849924.html)
 - **NXP Product Page:** [i.MX 8M Plus Product Page](https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-8-processors/i-mx-8m-plus-arm-cortex-a53-machine-learning-vision-multimedia-and-industrial-iot:i.MX8MPLUS)
+- **Local Datasheets:** See [references/datasheets/IMX8MPIEC.pdf](../../references/datasheets/IMX8MPIEC.pdf) (Industrial) and [IMX8MPCEC.pdf](../../references/datasheets/IMX8MPCEC.pdf) (Consumer).
 - **Hardware Design Guide (Public PDF):** [i.MX 8M Plus Hardware Developer's Guide](https://www.nxp.com/docs/en/hardware-development/IMX8MPHDG.pdf)
 
 ---
