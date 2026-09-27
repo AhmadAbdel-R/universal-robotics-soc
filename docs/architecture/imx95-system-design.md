@@ -14,11 +14,13 @@ We initially evaluated the i.MX 8M Plus, but pivoted to the i.MX 95 series to ga
 - **PCB Manufacturability:** The 19x19 mm package has a highly forgiving **0.7 mm BGA pitch**. Combined with JLCPCB's free Via-in-Pad (POFV) on 6-10 layer boards, routing this chip will be incredibly easy and won't require expensive High-Density Interconnect (HDI) manufacturing.
 - **Performance:** It easily exceeds our robotics requirements with six A55 cores and dual real-time microcontrollers, ensuring precise motor control and heavy vision processing simultaneously.
 
-### Vendor Links & Resources
-- **NXP Product Page & Datasheets:** [i.MX 95 Product Page](https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-9-processors/i-mx-95-family-high-performance-safety-enabled-applications-processor:i.MX95)
-- **Hardware Design Guide:** [i.MX 95 Hardware Developer's Guide (Requires NXP Login)](https://www.nxp.com/)
-- **LCSC / Distributors:** Can be procured via major distributors (Mouser, DigiKey, Avnet, LCSC).
-- **Mouser Page:** [Mouser MIMX9536CVZXNAC](https://www.mouser.com/ProductDetail/NXP-Semiconductors/MIMX9536CVZXNAC)
+### Vendor Links & Sourcing Strategy
+Because the i.MX 95 is a cutting-edge processor, it is generally **not** found in LCSC's native catalog. (Note: `MIMX9536CVTXNBC` is the 15x15mm 0.5mm pitch package which we are avoiding. We are specifically using the `MIMX9536CVZXNAC` 19x19mm 0.7mm pitch package).
+- **Procurement Strategy:** Since LCSC does not natively stock this yet, we will procure it from **Mouser** or **DigiKey** and use JLCPCB's **Global Sourcing / Consignment** feature to have them assemble it on the board.
+- **Mouser Page (Exact Z-Package):** [Mouser MIMX9536CVZXNAC](https://www.mouser.com/ProductDetail/NXP-Semiconductors/MIMX9536CVZXNAC)
+- **DigiKey Page (Exact Z-Package):** [DigiKey MIMX9536CVZXNAC](https://www.digikey.com/en/products/detail/nxp-usa-inc/MIMX9536CVZXNAC/22137978)
+- **NXP Product Page:** [i.MX 95 Product Page](https://www.nxp.com/products/processors-and-microcontrollers/arm-processors/i-mx-applications-processors/i-mx-9-processors/i-mx-95-family-high-performance-safety-enabled-applications-processor:i.MX95)
+- **Hardware Design Guide:** [i.MX 95 Hardware Developer's Guide](https://www.nxp.com/) *(Requires NXP Login. See Section 4 for LPDDR4x layout guidelines and Section 5 for Power/PMIC mapping).*
 
 ---
 
@@ -136,18 +138,21 @@ Selecting the right supporting components is critical for ensuring NXP BSP (Boar
 - **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4x, 200-ball VFBGA) or equivalent **Samsung / SK Hynix** automotive-grade memory.
 - **Why:** To run a full Linux stack and AI vision models, we need high bandwidth. LPDDR4x offers massive bandwidth at lower power than standard DDR4.
 - **Trade-offs:** LPDDR5 is faster, but LPDDR4x is cheaper, perfectly adequate for the i.MX 95, and routing a 200-ball BGA is mechanically easier on a 6-10 layer board. Crucially, Micron and Samsung are the "golden standard" used in NXP's DDR stress tools. Using them prevents us from having to manually calculate complex DDR timing parameters from scratch.
+- **Datasheet Ref:** See **i.MX 95 Hardware Developer’s Guide, Section 4 (LPDDR4x Routing Guidelines)** for exact impedance and length matching rules.
 - **Link:** [Micron LPDDR4](https://www.micron.com/products/dram/lpdram/lpddr4-lpddr4x) | [Search on LCSC](https://www.lcsc.com/products/DRAM_11239.html)
 
 ### 3. Mass Storage (eMMC 5.1)
 - **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia (Toshiba) THGBM series** (16GB - 32GB).
 - **Why:** SD cards are notoriously unreliable for robotics experiencing heavy vibration. eMMC is soldered directly to the board and offers wear-leveling controllers built-in, making it incredibly robust for the Linux RootFS.
 - **Trade-offs:** We could use a PCIe NVMe SSD for massive storage, but that consumes our only PCIe lane and takes up massive mechanical space (M.2 slot). eMMC 5.1 is tiny (11.5x13mm BGA), cheap, and fast enough (~400MB/s) for our OS requirements without eating up the PCIe bus.
+- **Datasheet Ref:** See **i.MX 95 Datasheet, USDHC (Ultra High Speed Dual Host Controller) Electrical Characteristics** for max clock speeds.
 - **Link:** [Kioxia eMMC](https://europe.kioxia.com/en-europe/business/memory/mlc-nand/emmc.html)
 
 ### 4. Configuration Boot Flash (QSPI/Octa-SPI)
 - **Recommendation:** **Macronix MX25L / MX25U series** or **Winbond W25Q series** (16MB - 32MB).
 - **Why:** If the eMMC fails or the Linux OS gets corrupted, the board is bricked. We mitigate this by storing the microscopic bootloader (U-Boot/ATF) on an isolated, highly reliable SPI NOR flash chip. The i.MX 95 Boot ROM natively supports Macronix over the FlexSPI controller.
 - **Trade-offs:** Adding a secondary flash chip adds ~$1 to the BOM and takes up a small 8-WSON footprint. However, the architectural safety of having an un-brickable bootloader that can re-flash the eMMC over USB is well worth the space and cost.
+- **Datasheet Ref:** See **i.MX 95 Reference Manual, FlexSPI Controller Chapter** and the **System Boot Chapter** for supported NOR flash vendors.
 - **Link:** [Macronix NOR Flash](https://www.macronix.com/en-us/products/NOR-Flash/Pages/default.aspx)
 
 ### 5. On-Board Debugger (USB-to-JTAG/UART)
