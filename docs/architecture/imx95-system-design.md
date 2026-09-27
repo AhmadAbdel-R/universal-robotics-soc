@@ -39,9 +39,9 @@ flowchart TD
         QSPI[Octa / QSPI NOR Flash]
     end
 
-    subgraph Power
+    subgraph PowerSystem
         PMIC[NXP PMIC - PCA945x / PFx]
-        Power[5V System Power]
+        SysPower[5V System Power]
     end
 
     subgraph Peripherals & IO
@@ -75,7 +75,7 @@ flowchart TD
     CPU <--> PCIe
 
     %% Power Connections
-    Power --> PMIC
+    SysPower --> PMIC
     PMIC --> CPU
     PMIC --> LPDDR
     PMIC --> eMMC
@@ -114,3 +114,37 @@ Do we need a USB-to-JTAG chip (like an FTDI FT2232) directly on the board?
 1. Select the specific PMIC (Power Management IC) recommended by NXP for the i.MX 95.
 2. Select LPDDR4x/LPDDR5 memory modules that match NXP's reference designs to ensure timing compatibility.
 3. Design the Boot Mode strapping resistor network to allow forcing USB recovery mode.
+
+---
+
+## Recommended Supporting ICs & References
+Selecting the right supporting components is critical for ensuring NXP BSP (Board Support Package) compatibility and avoiding software headaches.
+
+### 1. Power Management (PMIC)
+- **Recommendation:** **NXP PCA9451A** or the designated i.MX 9 companion PMIC.
+- **Why:** Using NXP's companion PMIC guarantees the exact power sequencing, voltage scaling (DVS), and standby states required by the i.MX 95 Boot ROM out-of-the-box.
+- **Link:** [NXP PMIC Portfolio](https://www.nxp.com/products/power-management/pmics-and-sbcs:PMICS-AND-SBCS)
+
+### 2. Main Memory (LPDDR4x)
+- **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4x) or equivalent **Samsung / SK Hynix** automotive-grade memory.
+- **Why:** Micron and Samsung are heavily tested in NXP's DDR stress tools. Sticking to memory chips used on NXP EVKs saves weeks of DDR calibration time.
+- **Link:** [Micron LPDDR4](https://www.micron.com/products/dram/lpdram/lpddr4-lpddr4x) | [Search on LCSC](https://www.lcsc.com/products/DRAM_11239.html)
+
+### 3. Mass Storage (eMMC 5.1)
+- **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia (Toshiba) THGBM series** (16GB - 32GB).
+- **Why:** High reliability for Linux RootFS. eMMC 5.1 is the maximum standard natively supported by the standard USDHC controllers without moving to PCIe-based NVMe.
+- **Link:** [Kioxia eMMC](https://europe.kioxia.com/en-europe/business/memory/mlc-nand/emmc.html)
+
+### 4. Boot Flash (QSPI/Octa-SPI)
+- **Recommendation:** **Macronix MX25L / MX25U series** or **Winbond W25Q series** (16MB - 32MB).
+- **Why:** Macronix is natively supported by NXP's FlexSPI controller in the Boot ROM. Used specifically for storing U-Boot and the ARM Trusted Firmware (ATF).
+- **Link:** [Macronix NOR Flash](https://www.macronix.com/en-us/products/NOR-Flash/Pages/default.aspx)
+
+### 5. Flashing Tool (NXP UUU)
+- **Tool:** **mfgtools (Universal Update Utility - UUU)**
+- **Why:** The official, open-source tool from NXP for pushing firmware over USB to a blank board.
+- **Link:** [NXP mfgtools GitHub Repository](https://github.com/nxp-imx/mfgtools)
+
+### 6. High-Speed Switches / PHYs (PCIe / Ethernet)
+- **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit Ethernet PHYs with RGMII).
+- **USB Hub:** **Microchip USB2514B** or **Cypress HX3** (if we need more USB ports than the SoC provides natively).
