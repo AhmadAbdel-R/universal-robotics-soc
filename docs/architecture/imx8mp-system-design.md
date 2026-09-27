@@ -37,36 +37,36 @@ flowchart LR
     classDef soc fill:#2d3436,stroke:#636e72,stroke-width:2px,color:#dfe6e9,stroke-dasharray: 5 5;
 
     %% Left External Connectors
-    PWR_JACK([Power Jack / VDC]):::external
-    DEBUG_USB([Debug USB Type-C]):::external
-    CAN_CONN([CAN Bus Connectors]):::external
-    SPI_CONN([Sensor Expansion]):::external
+    PWR_JACK(["Power Jack / VDC"]):::external
+    DEBUG_USB(["Debug USB Type-C"]):::external
+    CAN_CONN(["CAN Bus Connectors"]):::external
+    SPI_CONN(["Sensor Expansion"]):::external
 
     %% External Support ICs
-    FTDI[FT2232HL USB-to-JTAG/UART]:::io
+    FTDI["FT2232HL USB-to-JTAG/UART"]:::io
 
     %% Central SoC Grouping
-    subgraph SOC [NXP i.MX 8M Plus Architecture]
+    subgraph SOC ["NXP i.MX 8M Plus Architecture"]
         direction LR
         
         %% Internal Nodes
-        PMIC[PCA9460 PMIC]:::pwr
-        RT[M7 Real-Time Core]:::core
-        CPU[4x Cortex-A53 Cores]:::core
-        NPU[2.3 TOPS NPU]:::core
-        RAM[LPDDR4 Memory]:::memory
-        FLASH[eMMC 5.1 & QSPI]:::memory
+        PMIC["PCA9460 PMIC"]:::pwr
+        RT["M7 Real-Time Core"]:::core
+        CPU["4x Cortex-A53 Cores"]:::core
+        NPU["2.3 TOPS NPU"]:::core
+        RAM["LPDDR4 Memory"]:::memory
+        FLASH["eMMC 5.1 & QSPI"]:::memory
         
         %% Combined IO Nodes for cleaner wiring
-        HS_IO[USB 3.0 & PCIe Gen3]:::io
-        NET_IO[Dual Gigabit MACs (TSN)]:::io
-        MIPI_IO[Dual MIPI CSI & DSI]:::io
+        HS_IO["USB 3.0 & PCIe Gen3"]:::io
+        NET_IO["Dual Gigabit MACs (TSN)"]:::io
+        MIPI_IO["Dual MIPI CSI & DSI"]:::io
     end
 
     %% Right External Connectors
-    USB_PCIE([USB Type-C & M.2 PCIe]):::external
-    ETH_CONN([2x RJ45 w/ Magnetics]):::external
-    CAM_DISP([Camera & Display Panels]):::external
+    USB_PCIE(["USB Type-C & M.2 PCIe"]):::external
+    ETH_CONN(["2x RJ45 w/ Magnetics"]):::external
+    CAM_DISP(["Camera & Display Panels"]):::external
 
     %% Left side routing
     PWR_JACK --> PMIC
