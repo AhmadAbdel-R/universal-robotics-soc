@@ -96,16 +96,16 @@ When the i.MX 8M Plus boots with a blank eMMC/Flash, its Boot ROM automatically 
 
 ### 1. Power Management (PMIC)
 - **Recommendation:** **NXP PCA9460** or **PCA9450C** (Companion PMICs for i.MX 8M Plus).
-- **Datasheet Ref:** See **i.MX 8M Plus Hardware Developer’s Guide, Section 4.2 (Power Management)**.
+- **Datasheet Ref:** See [i.MX 8M Plus Hardware Developer's Guide (PDF)](https://www.nxp.com/docs/en/hardware-development/IMX8MPHDG.pdf), **Section 4.2 (Power Management)**.
 - **Why:** The processor requires complex power-up sequencing. A dedicated companion PMIC handles this internally via pre-programmed OTP memory.
 
 ### 2. Main Memory (LPDDR4)
 - **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4) or equivalent Samsung memory.
-- **Datasheet Ref:** See **i.MX 8M Plus Hardware Developer’s Guide, Section 3.1 (LPDDR4 Routing Guidelines)** for exact impedance, length matching, and skew rules.
+- **Datasheet Ref:** See [i.MX 8M Plus Hardware Developer's Guide (PDF)](https://www.nxp.com/docs/en/hardware-development/IMX8MPHDG.pdf), **Section 3.1 (LPDDR4 Routing Guidelines)** for exact impedance, length matching, and skew rules.
 
 ### 3. Mass Storage (eMMC 5.1)
 - **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia THGBM series** (64GB, 128GB, or 256GB).
-- **Datasheet Ref:** See **i.MX 8M Plus Datasheet, Section 3.9 (uSDHC Electrical Characteristics)** for clock margins.
+- **Datasheet Ref:** See [i.MX 8M Plus Datasheet (PDF)](https://www.nxp.com/docs/en/data-sheet/IMX8MPIEC.pdf), **Section 3.9 (uSDHC Electrical Characteristics)** for clock margins.
 - **Why High Capacity:** The i.MX 8M Plus has only a single **PCIe Gen3 lane**. We are explicitly **reserving this PCIe lane** via a standard M.2 slot for high-bandwidth external hardware. This allows the user to plug in a Coral Edge TPU for AI, an M.2 WiFi 6 card, an external GPU, OR an **external M.2 NVMe SSD** if they need terabytes of storage. Because the PCIe lane is a modular expansion slot rather than a hardwired SSD, the onboard eMMC must provide all the primary bulk storage for the OS. Therefore, a massive eMMC (64GB+) is strictly required.
 
 ### 5. Wireless (WiFi / Bluetooth)
@@ -114,7 +114,7 @@ When the i.MX 8M Plus boots with a blank eMMC/Flash, its Boot ROM automatically 
 
 ### 6. Configuration Boot Flash (QSPI)
 - **Recommendation:** **Macronix MX25L** or **Winbond W25Q series**.
-- **Datasheet Ref:** See **i.MX 8M Plus Reference Manual, Chapter 6 (System Boot)** for the exact boot strapping pin configurations.
+- **Datasheet Ref:** See [i.MX 8M Plus Reference Manual (PDF)](https://www.nxp.com/docs/en/reference-manual/IMX8MPRM.pdf), **Chapter 6 (System Boot)** for the exact boot strapping pin configurations.
 
 ### 7. High-Speed Switches / PHYs (Ethernet)
 - **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit PHYs with RGMII). These are natively supported by the mainline Linux kernel.
