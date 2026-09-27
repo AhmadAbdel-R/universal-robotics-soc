@@ -22,92 +22,71 @@ We initially evaluated the i.MX 8M Plus, but pivoted to the i.MX 95 series to ga
 
 ---
 
-## High-Level Block Diagram
-
 ```mermaid
 flowchart LR
-    %% Left side connectors (External)
-    PWR_JACK([Power Jack / VDC])
-    JTAG_CONN([JTAG / SWD Header])
-    UART_CONN([Serial Console])
-    CAN_CONN([CAN Bus Connectors])
-    SPI_CONN([Sensor Expansion])
+    %% Color Definitions
+    classDef external fill:#2d3436,stroke:#b2bec3,stroke-width:2px,color:#fff,rx:5px,ry:5px;
+    classDef core fill:#0984e3,stroke:#74b9ff,stroke-width:2px,color:#fff,rx:5px,ry:5px;
+    classDef memory fill:#00b894,stroke:#55efc4,stroke-width:2px,color:#fff,rx:5px,ry:5px;
+    classDef io fill:#e17055,stroke:#fab1a0,stroke-width:2px,color:#fff,rx:5px,ry:5px;
+    classDef pwr fill:#d63031,stroke:#ff7675,stroke-width:2px,color:#fff,rx:5px,ry:5px;
+    classDef soc fill:#2d3436,stroke:#636e72,stroke-width:2px,color:#dfe6e9,stroke-dasharray: 5 5;
 
-    %% Central Block
+    %% Left External Connectors
+    PWR_JACK([Power Jack / VDC]):::external
+    JTAG_CONN([JTAG / SWD]):::external
+    UART_CONN([Serial Console]):::external
+    CAN_CONN([CAN Bus Connectors]):::external
+    SPI_CONN([Sensor Expansion]):::external
+
+    %% Central SoC Grouping
     subgraph SOC [NXP i.MX 95 System Architecture]
         direction LR
-
-        subgraph L_IF [Left Interfaces]
-            direction TB
-            VDD_IN[VDD_IN]
-            JTAG_IF[JTAG_SWD]
-            UART_IF[UART1 / UART2]
-            CAN_IF[CAN-FD1 / CAN-FD2]
-            SPI_IF[LPSPI / LPI2C]
-        end
-
-        subgraph CORE [Core Processing & Memory]
-            direction TB
-            PMIC[Companion PMIC]
-            CPU[6x Cortex-A55]
-            RT[M7 & M33 Real-Time]
-            NPU[eIQ Neutron NPU]
-            RAM[LPDDR4x Memory]
-            FLASH[eMMC 5.1 & QSPI]
-        end
-
-        subgraph R_IF [Right Interfaces]
-            direction TB
-            USB_IF[USB1 / USB2]
-            ETH1_IF[ENET1 Gigabit]
-            ETH2_IF[ENET2 10-Gigabit]
-            PCIE_IF[PCIe Gen3]
-            CSI_IF[MIPI CSI]
-            DSI_IF[MIPI DSI]
-        end
+        
+        %% Internal Nodes
+        PMIC[PCA9451A PMIC]:::pwr
+        RT[M7 & M33 Real-Time Cores]:::core
+        CPU[6x Cortex-A55 Cores]:::core
+        NPU[eIQ Neutron NPU]:::core
+        RAM[LPDDR4x Memory]:::memory
+        FLASH[eMMC 5.1 & QSPI]:::memory
+        
+        %% Combined IO Nodes for cleaner wiring
+        HS_IO[USB & PCIe Controllers]:::io
+        NET_IO[Gigabit & 10GbE MACs]:::io
+        MIPI_IO[MIPI CSI/DSI Controllers]:::io
     end
 
-    %% Right side connectors (External)
-    USB_CONN([USB 3.0 Type-C])
-    ETH1_CONN([RJ45 w/ Magnetics])
-    ETH2_CONN([10G RJ45 / SFP+])
-    PCIE_CONN([M.2 PCIe Slot])
-    CAM_CONN([Camera Modules])
-    DISP_CONN([Display Panel])
+    %% Right External Connectors
+    USB_PCIE([USB Type-C & M.2 PCIe]):::external
+    ETH_CONN([RJ45 & SFP+ Modules]):::external
+    CAM_DISP([Camera & Display Panels]):::external
 
-    %% Routing Left (External to Internal Interface)
-    PWR_JACK --> VDD_IN
-    JTAG_CONN <--> JTAG_IF
-    UART_CONN <--> UART_IF
-    CAN_CONN <--> CAN_IF
-    SPI_CONN <--> SPI_IF
+    %% Left side routing
+    PWR_JACK --> PMIC
+    JTAG_CONN <--> RT
+    UART_CONN <--> CPU
+    CAN_CONN <--> RT
+    SPI_CONN <--> CPU
 
-    %% Routing Internal (Interfaces to Core)
-    VDD_IN --> PMIC
-    JTAG_IF <--> RT
-    UART_IF <--> CPU
-    CAN_IF <--> RT
-    SPI_IF <--> CPU
-    
+    %% Internal routing (Core logic)
     PMIC --> CPU
+    PMIC -.-> RAM
+    PMIC -.-> FLASH
+    
+    CPU <--> RT
+    CPU <--> NPU
     CPU <--> RAM
     CPU <--> FLASH
-    CPU <--> NPU
     
-    CPU <--> USB_IF
-    CPU <--> ETH1_IF
-    CPU <--> ETH2_IF
-    CPU <--> PCIE_IF
-    CPU <--> CSI_IF
-    CPU <--> DSI_IF
+    CPU <--> HS_IO
+    CPU <--> NET_IO
+    CPU <--> MIPI_IO
 
-    %% Routing Right (Internal Interface to External)
-    USB_IF <--> USB_CONN
-    ETH1_IF <--> ETH1_CONN
-    ETH2_IF <--> ETH2_CONN
-    PCIE_IF <--> PCIE_CONN
-    CSI_IF <--> CAM_CONN
-    DSI_IF <--> DISP_CONN
+    %% Right side routing
+    HS_IO <--> USB_PCIE
+    NET_IO <--> ETH_CONN
+    MIPI_IO <--> CAM_DISP
 ```
 
 ---
