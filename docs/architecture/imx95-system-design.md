@@ -118,33 +118,38 @@ Do we need a USB-to-JTAG chip (like an FTDI FT2232) directly on the board?
 ---
 
 ## Recommended Supporting ICs & References
-Selecting the right supporting components is critical for ensuring NXP BSP (Board Support Package) compatibility and avoiding software headaches.
+Selecting the right supporting components is critical for ensuring NXP BSP (Board Support Package) compatibility, meeting our mechanical size constraints, and avoiding software headaches. Here is the chip-level breakdown of what we need and *why*:
 
-### 1. Power Management (PMIC)
-- **Recommendation:** **NXP PCA9451A** or the designated i.MX 9 companion PMIC.
-- **Why:** Using NXP's companion PMIC guarantees the exact power sequencing, voltage scaling (DVS), and standby states required by the i.MX 95 Boot ROM out-of-the-box.
+### 1. Power Management (PMIC) vs Discrete Supplies
+- **Recommendation:** **NXP PCA9451A** (or the exact designated i.MX 9 companion PMIC) for the core SoC rails.
+- **Why:** The i.MX 95 requires strict, complex power-up/power-down sequencing (e.g., core voltage first, then I/O, then memory). A dedicated companion PMIC handles this internally via pre-programmed OTP (One-Time Programmable) memory and interfaces via I2C for dynamic voltage scaling (DVS) to save power.
+- **Trade-offs & BOM Consolidation:** While a highly integrated PMIC is excellent for the SoC core, it can be expensive and has a large BGA footprint. For peripheral power (e.g., 5V for USB, 3.3V for sensors), we will **not** use massive PMICs. Instead, we use a **repeating discrete supply strategy**: we select a single, cheap, high-efficiency synchronous buck converter (e.g., Texas Instruments TLV62568) and use it multiple times across the board. By simply changing the feedback resistors, we get different voltages. This adds slightly more passive components, but massively consolidates our BOM, reduces supply chain risk, and lowers cost.
 - **Link:** [NXP PMIC Portfolio](https://www.nxp.com/products/power-management/pmics-and-sbcs:PMICS-AND-SBCS)
 
 ### 2. Main Memory (LPDDR4x)
-- **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4x) or equivalent **Samsung / SK Hynix** automotive-grade memory.
-- **Why:** Micron and Samsung are heavily tested in NXP's DDR stress tools. Sticking to memory chips used on NXP EVKs saves weeks of DDR calibration time.
+- **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4x, 200-ball VFBGA) or equivalent **Samsung / SK Hynix** automotive-grade memory.
+- **Why:** To run a full Linux stack and AI vision models, we need high bandwidth. LPDDR4x offers massive bandwidth at lower power than standard DDR4.
+- **Trade-offs:** LPDDR5 is faster, but LPDDR4x is cheaper, perfectly adequate for the i.MX 95, and routing a 200-ball BGA is mechanically easier on a 6-10 layer board. Crucially, Micron and Samsung are the "golden standard" used in NXP's DDR stress tools. Using them prevents us from having to manually calculate complex DDR timing parameters from scratch.
 - **Link:** [Micron LPDDR4](https://www.micron.com/products/dram/lpdram/lpddr4-lpddr4x) | [Search on LCSC](https://www.lcsc.com/products/DRAM_11239.html)
 
 ### 3. Mass Storage (eMMC 5.1)
 - **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia (Toshiba) THGBM series** (16GB - 32GB).
-- **Why:** High reliability for Linux RootFS. eMMC 5.1 is the maximum standard natively supported by the standard USDHC controllers without moving to PCIe-based NVMe.
+- **Why:** SD cards are notoriously unreliable for robotics experiencing heavy vibration. eMMC is soldered directly to the board and offers wear-leveling controllers built-in, making it incredibly robust for the Linux RootFS.
+- **Trade-offs:** We could use a PCIe NVMe SSD for massive storage, but that consumes our only PCIe lane and takes up massive mechanical space (M.2 slot). eMMC 5.1 is tiny (11.5x13mm BGA), cheap, and fast enough (~400MB/s) for our OS requirements without eating up the PCIe bus.
 - **Link:** [Kioxia eMMC](https://europe.kioxia.com/en-europe/business/memory/mlc-nand/emmc.html)
 
-### 4. Boot Flash (QSPI/Octa-SPI)
+### 4. Configuration Boot Flash (QSPI/Octa-SPI)
 - **Recommendation:** **Macronix MX25L / MX25U series** or **Winbond W25Q series** (16MB - 32MB).
-- **Why:** Macronix is natively supported by NXP's FlexSPI controller in the Boot ROM. Used specifically for storing U-Boot and the ARM Trusted Firmware (ATF).
+- **Why:** If the eMMC fails or the Linux OS gets corrupted, the board is bricked. We mitigate this by storing the microscopic bootloader (U-Boot/ATF) on an isolated, highly reliable SPI NOR flash chip. The i.MX 95 Boot ROM natively supports Macronix over the FlexSPI controller.
+- **Trade-offs:** Adding a secondary flash chip adds ~$1 to the BOM and takes up a small 8-WSON footprint. However, the architectural safety of having an un-brickable bootloader that can re-flash the eMMC over USB is well worth the space and cost.
 - **Link:** [Macronix NOR Flash](https://www.macronix.com/en-us/products/NOR-Flash/Pages/default.aspx)
 
 ### 5. Flashing Tool (NXP UUU)
 - **Tool:** **mfgtools (Universal Update Utility - UUU)**
-- **Why:** The official, open-source tool from NXP for pushing firmware over USB to a blank board.
+- **Why:** The official, open-source tool from NXP for pushing firmware over USB to a blank board. It eliminates the need for expensive JTAG programmers in production.
 - **Link:** [NXP mfgtools GitHub Repository](https://github.com/nxp-imx/mfgtools)
 
-### 6. High-Speed Switches / PHYs (PCIe / Ethernet)
-- **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit Ethernet PHYs with RGMII).
-- **USB Hub:** **Microchip USB2514B** or **Cypress HX3** (if we need more USB ports than the SoC provides natively).
+### 6. High-Speed Switches / PHYs (Ethernet & USB)
+- **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit Ethernet PHYs with RGMII). These are industry standards with mainline Linux driver support, ensuring the Ethernet ports "just work" on boot.
+- **USB Hub:** If the mechanical constraints of the robotics platform require more than the native USB ports, we will use a **Microchip USB2514B**.
+- **Trade-offs:** Every external PHY adds significant power draw and routing complexity. We will carefully evaluate if the robotics use-case requires dual Ethernet ports before placing a second PHY, to save PCB real estate and power.
