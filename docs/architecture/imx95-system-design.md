@@ -34,10 +34,12 @@ flowchart LR
 
     %% Left External Connectors
     PWR_JACK([Power Jack / VDC]):::external
-    JTAG_CONN([JTAG / SWD]):::external
-    UART_CONN([Serial Console]):::external
+    DEBUG_USB([Debug USB Type-C]):::external
     CAN_CONN([CAN Bus Connectors]):::external
     SPI_CONN([Sensor Expansion]):::external
+
+    %% External Support ICs
+    FTDI[FT2232HL USB-to-JTAG/UART]:::io
 
     %% Central SoC Grouping
     subgraph SOC [NXP i.MX 95 System Architecture]
@@ -64,8 +66,9 @@ flowchart LR
 
     %% Left side routing
     PWR_JACK --> PMIC
-    JTAG_CONN <--> RT
-    UART_CONN <--> CPU
+    DEBUG_USB <--> FTDI
+    FTDI <-->|JTAG| RT
+    FTDI <-->|UART| CPU
     CAN_CONN <--> RT
     SPI_CONN <--> CPU
 
@@ -102,11 +105,11 @@ When the i.MX 95 boots with a blank eMMC/Flash, its Boot ROM fails to find a val
 - **The Process:** UUU pushes a tiny bootloader (U-Boot) into the SoC's internal RAM over USB and executes it. This temporary bootloader then exposes the eMMC and QSPI flash to the host PC, allowing UUU to permanently flash the full Linux OS and bootloader to the eMMC.
 - **Hardware Requirement:** We *must* expose the `USB1` interface as a Type-C or Micro-B port, and route the `BOOT_MODE` pins to physical switches or pull-resistors so we can force Serial Downloader mode if the eMMC ever gets corrupted.
 
-### 2. Low-Level Debugging (JTAG)
-Do we need a USB-to-JTAG chip (like an FTDI FT2232) directly on the board? 
-- **Recommendation:** No, not on the board itself. Adding an FTDI chip wastes space and BOM cost. 
-- **Instead:** We will route the standard ARM JTAG/SWD signals (`TCK`, `TMS`, `TDI`, `TDO`, `RESET`) to a small 10-pin or 20-pin Cortex Debug header.
-- **Usage:** For bare-metal hardware bring-up or debugging firmware on the Cortex-M7/M33 real-time cores, developers will plug in an external hardware debugger (e.g., Segger J-Link, NXP MCU-Link, or an external FTDI-based probe) into this header.
+### 2. Low-Level Debugging & Serial Console (FTDI)
+Do we need a USB-to-JTAG chip directly on the board? 
+- **Recommendation:** **Yes, we will integrate an FTDI FT2232HL (Dual Channel USB-to-UART/FIFO).** 
+- **Why:** Because this board is for development and low-volume robotics (not hyper-optimized mass consumer production), ease-of-use is a massive priority. Putting an FTDI chip directly on the board allows developers to just plug in a single USB cable and instantly get both a **Serial UART Console** (for Linux/U-Boot logs) and a **JTAG/SWD interface** (for bare-metal debugging).
+- **Trade-offs:** It consumes more PCB space and adds a few dollars to the BOM, but completely eliminates the need for expensive external hardware debuggers (like Segger J-Link or proprietary MCU-Links) and makes out-of-the-box configuration vastly easier.
 
 ### 3. Memory Configuration
 - **Boot ROM Config:** We will place a **QSPI or Octa-SPI NOR Flash** on the board. The Boot ROM will be configured via boot pins to load U-Boot from this SPI flash.
@@ -147,12 +150,17 @@ Selecting the right supporting components is critical for ensuring NXP BSP (Boar
 - **Trade-offs:** Adding a secondary flash chip adds ~$1 to the BOM and takes up a small 8-WSON footprint. However, the architectural safety of having an un-brickable bootloader that can re-flash the eMMC over USB is well worth the space and cost.
 - **Link:** [Macronix NOR Flash](https://www.macronix.com/en-us/products/NOR-Flash/Pages/default.aspx)
 
-### 5. Flashing Tool (NXP UUU)
+### 5. On-Board Debugger (USB-to-JTAG/UART)
+- **Recommendation:** **FTDI FT2232HL** (Dual Channel High-Speed USB to Multipurpose UART/FIFO).
+- **Why:** Integrating this chip allows us to expose a single Micro-USB or Type-C "Debug Port". One channel acts as the standard Serial Console (UART) for Linux, and the other channel acts as an OpenOCD-compatible JTAG debugger. 
+- **Trade-offs:** Adds ~$5 cost and takes up footprint space, but eliminates the need for developers to buy external hardware debug probes, vastly improving the out-of-the-box development experience.
+
+### 6. Flashing Tool (NXP UUU)
 - **Tool:** **mfgtools (Universal Update Utility - UUU)**
 - **Why:** The official, open-source tool from NXP for pushing firmware over USB to a blank board. It eliminates the need for expensive JTAG programmers in production.
 - **Link:** [NXP mfgtools GitHub Repository](https://github.com/nxp-imx/mfgtools)
 
-### 6. High-Speed Switches / PHYs (Ethernet & USB)
+### 7. High-Speed Switches / PHYs (Ethernet & USB)
 - **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit Ethernet PHYs with RGMII). These are industry standards with mainline Linux driver support, ensuring the Ethernet ports "just work" on boot.
 - **USB Hub:** If the mechanical constraints of the robotics platform require more than the native USB ports, we will use a **Microchip USB2514B**.
 - **Trade-offs:** Every external PHY adds significant power draw and routing complexity. We will carefully evaluate if the robotics use-case requires dual Ethernet ports before placing a second PHY, to save PCB real estate and power.
