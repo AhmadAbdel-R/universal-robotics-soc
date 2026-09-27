@@ -1,8 +1,21 @@
-# Architecture
+# System Architecture Overview
 
-The Universal Robotics Controller (URC) architecture is designed to merge high-level computational tasks with low-level real-time actuation. 
+## High-Level System Block Diagram
 
-## High-Level Block Diagram
+This is the broadest view of the system: the board as a universal robotics brain.
+
+```mermaid
+flowchart LR
+    PWR[External Power System] --> URC[Universal Robotics Controller]
+    CAM[Camera / Vision Inputs] --> URC
+    SENS[Onboard + External Sensors] --> URC
+    NET[Ethernet / Wi-Fi / USB / IoT] <--> URC
+    ACT[Actuators / ESCs / Servo Drives / Stepper Drivers] <--> URC
+    UI[Debug / Desktop / Dev Interfaces] <--> URC
+    STO[Local Storage / eMMC / NVMe / SD] <--> URC
+```
+
+## Internal Architecture
 
 ```mermaid
 flowchart TD
