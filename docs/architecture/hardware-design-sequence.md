@@ -13,20 +13,20 @@ To prevent the board from being "bricked" during Linux OS updates, the primary b
 - **Select QSPI / Octa-SPI NOR Flash:** Choose a supported NOR flash chip (e.g., Winbond or Macronix).
 - **FlexSPI Interface:** Route the FlexSPI signals from the SoC to the NOR flash.
 
-## Phase 3: Main Memory (DDR)
+## Phase 3: Main Memory (LPDDR4)
 The most complex and critical high-speed layout task.
-- **Select Memory Standard:** Decide between LPDDR4x or LPDDR5 (LPDDR4x is generally cheaper and easier to route; LPDDR5 offers more bandwidth).
-- **Memory Topology:** Implement a point-to-point topology for LPDDR4/5. 
-- **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes) and impedance targets (e.g., 40-ohm single-ended, 80-ohm differential).
+- **Select Memory Standard:** The i.MX 8M Plus utilizes LPDDR4 at 3200 MT/s.
+- **Memory Topology:** Implement a **Point-to-Point topology** using a single 32-bit RAM chip. Do NOT use a Fly-by topology with dual 16-bit chips to preserve the 6-layer stackup simplicity.
+- **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes) and impedance targets (40-ohm SE, 80-ohm Diff).
 
 ## Phase 4: Mass Storage (eMMC)
-- **Select eMMC 5.1 Chip:** Choose an industrial-grade eMMC module (e.g., 16GB or 32GB) for the Linux RootFS.
+- **Select eMMC 5.1 Chip:** Choose a massive high-capacity eMMC module (**64GB, 128GB, or 256GB**) for the Linux OS and data logging. This is strictly required because the PCIe lane is reserved for M.2 expansion rather than a hardwired NVMe SSD.
 - **SDIO Routing:** Route the 8-bit eMMC data bus, clock, and command lines.
 
 ## Phase 5: High-Speed I/O
-- **Networking:** Route the Gigabit Ethernet (TSN) and 10-Gigabit Ethernet MACs to appropriate PHYs.
-- **Cameras:** Route MIPI-CSI interfaces for robotics vision.
-- **Expansion:** Route PCIe Gen3 lanes (e.g., to an M.2 slot for NVMe or WiFi/AI accelerators).
+- **Networking (Dual Ethernet):** Route the two Gigabit Ethernet MACs (one with TSN) to RGMII PHYs (e.g., KSZ9131 or RTL8211F). Route the PHYs to standard **RJ45 connectors with integrated magnetics** for cost-effective, standard connectivity.
+- **Expansion (M.2 PCIe):** Route the single PCIe Gen3 lane to an **M.2 Key-M Slot**. This preserves modularity, allowing users to plug in NVMe SSDs, Coral Edge TPUs, or M.2 WiFi 6 cards as needed.
+- **Cameras:** Route the Dual MIPI-CSI interfaces to standard 15-pin FFC connectors or high-speed board-to-board connectors for robotics vision (e.g., IMX219 or IMX477 camera modules).
 
 ## Phase 6: Robotics & Low-Speed I/O
 - **CAN-FD:** Route CAN interfaces to transceivers for real-time motor control.
