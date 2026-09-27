@@ -114,3 +114,13 @@ flowchart LR
     ACT[Actuators / ESCs / Servo Drives / Stepper Drivers] <--> URC
     UI[Debug / Desktop / Dev Interfaces] <--> URC
     STO[Local Storage / eMMC / NVMe / SD] <--> URC
+```
+
+---
+
+## Documentation
+
+- [Project Requirements](docs/01-requirements.md)
+- [System Architecture](docs/02-architecture.md)
+- [Subsystem Templates](docs/03-subsystem-templates.md)
+- [PCB Layer Estimates](docs/04-layer-estimates.md)
