@@ -12,6 +12,8 @@ A compact, reusable robotics compute platform intended to unify Linux applicatio
 
 Requirements and constraints influence the choice of the central processing architecture — whether that is an MCU, MPU, SoC, FPGA, heterogeneous processor, or a combination of devices. At the same time, the selected central processor influences the requirements of every supporting subsystem.
 
+Furthermore, **external peripherals and their protocol requirements** (e.g., LiDAR via Ethernet, high-res cameras via MIPI CSI, motor drivers via CAN-FD) dictate the necessary I/O on the board, which feeds directly back into the SoC selection constraints.
+
 Engineering requirements force engineering trade-offs. The objective is therefore NOT:
 *Pick the fastest processor.*
 
