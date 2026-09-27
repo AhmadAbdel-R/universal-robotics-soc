@@ -138,20 +138,21 @@ For a detailed comparison of all evaluated candidates, see the [SoC Candidates D
 - **Phase 1** — Freeze High-Level Requirements *(Complete)*
 - **Phase 2** — Select Processing Architecture *(Complete)*
 - **Phase 3** — Select Memory / Storage *(In Progress)*
-- **Phase 4** — Define Power Architecture
-- **Phase 5** — Define External I/O
-- **Phase 6** — Define Mechanical Form Factor
-- **Phase 7** — Preliminary Stackup / SI Study
-- **Phase 8** — Schematic Capture
-- **Phase 9** — PCB Placement / Routing
-- **Phase 10** — Design Review
-- **Phase 11** — Fabrication / Assembly
-- **Phase 12** — Power Bring-Up
-- **Phase 13** — Bootloader / DDR Bring-Up
-- **Phase 14** — Linux BSP Bring-Up
-- **Phase 15** — Peripheral Validation
-- **Phase 16** — AI / Robotics Software
-- **Phase 17** — System Validation
+- **Phase 4** — Define High-Speed I/O (Ethernet, PCIe, USB, MIPI)
+- **Phase 5** — Define Robotics I/O (CAN-FD, Serial, PWM, I2C)
+- **Phase 6** — Define Power Architecture (Budgeting, Consolidation, PMIC)
+- **Phase 7** — Define Mechanical Form Factor
+- **Phase 8** — Preliminary Stackup / SI Study
+- **Phase 9** — Schematic Capture
+- **Phase 10** — PCB Placement / Routing
+- **Phase 11** — Design Review
+- **Phase 12** — Fabrication / Assembly
+- **Phase 13** — Power Bring-Up
+- **Phase 14** — Bootloader / DDR Bring-Up
+- **Phase 15** — Linux BSP Bring-Up
+- **Phase 16** — Peripheral Validation
+- **Phase 17** — AI / Robotics Software
+- **Phase 18** — System Validation
 
 *Note: For the detailed step-by-step schematic capture roadmap, see the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).*
 

@@ -23,17 +23,18 @@ The most complex and critical high-speed layout task.
 - **Select eMMC 5.1 Chip:** Choose an industrial-grade eMMC module (e.g., 16GB or 32GB) for the Linux RootFS.
 - **SDIO Routing:** Route the 8-bit eMMC data bus, clock, and command lines.
 
-## Phase 5: Power Delivery (PMIC)
-The i.MX 95 requires strict power-up and power-down sequencing.
-- **Select PMIC:** Use NXP's recommended Power Management IC (e.g., PCA945x series) paired with the i.MX 95.
-- **Power Sequencing:** Verify that the PMIC's pre-programmed OTP (One-Time Programmable) sequence matches the i.MX 95 datasheet requirements.
-- **Decoupling:** Map out the exact placement of local decoupling capacitors for the BGA power rails.
-
-## Phase 6: High-Speed I/O
+## Phase 5: High-Speed I/O
 - **Networking:** Route the Gigabit Ethernet (TSN) and 10-Gigabit Ethernet MACs to appropriate PHYs.
 - **Cameras:** Route MIPI-CSI interfaces for robotics vision.
 - **Expansion:** Route PCIe Gen3 lanes (e.g., to an M.2 slot for NVMe or WiFi/AI accelerators).
 
-## Phase 7: Robotics & Low-Speed I/O
+## Phase 6: Robotics & Low-Speed I/O
 - **CAN-FD:** Route CAN interfaces to transceivers for real-time motor control.
 - **Serial/I2C/SPI:** Route headers for sensors, IMUs, and external microcontrollers.
+
+## Phase 7: Power Delivery (Power Budget & PMIC)
+Power is purposely designed **last**. We cannot finalize the power architecture until we have selected the RAM, eMMC, PHYs, and external IO, because their voltage levels influence the total power budget.
+- **Consolidate Voltage Rails:** Analyze the voltage requirements of all selected chips (e.g., 1.8V, 3.3V) and consolidate them to reduce the BOM count (using the repeating discrete supply strategy where possible).
+- **Power Budgeting & Simulation:** Calculate the maximum current draw across all rails, establish a power budget, and simulate the thermal load.
+- **Core PMIC Selection:** Select the core PMIC (e.g., PCA9451A) to handle the strict power-up/power-down sequencing required by the i.MX 95.
+- **Decoupling:** Map out the exact placement of local decoupling capacitors for the BGA power rails.
