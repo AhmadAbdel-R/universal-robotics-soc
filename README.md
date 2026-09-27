@@ -94,7 +94,7 @@ flowchart TD
 | **Camera** | MIPI CSI strongly preferred |
 | **Display** | HDMI / DP / eDP / MIPI DSI desirable |
 | **General I/O** | UART, SPI, I²C, GPIO, PWM |
-| **Advanced I/O** | I³C, ADC, hardware timers/encoder interfaces desirable |
+| **Advanced I/O** | I3C, ADC, hardware timers/encoder interfaces desirable |
 | **Power** | Low-power and high-performance operating modes desirable |
 | **Mechanical** | Must remain usable in compact robotics applications including drones |
 | **Manufacturing** | Avoid unnecessary PCB/HDI complexity |
@@ -106,7 +106,7 @@ flowchart TD
 
 ## Current Design Status
 
-The project has completed **Phase 2 — Select Processing Architecture**, officially locking in the **NXP i.MX 95**.
+The project has completed **Phase 2 — Select Processing Architecture**, pivoting from the i.MX 95 to officially lock in the **NXP i.MX 8M Plus** due to documentation availability and native LCSC stock.
 We are now moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
 Please see the [Decision Log](docs/decisions/decision-log.md) for a record of the architectural trade-offs.
 
@@ -114,10 +114,10 @@ Please see the [Decision Log](docs/decisions/decision-log.md) for a record of th
 
 The central compute selection drives the rest of the board architecture. 
 
-**Selected SoC: NXP i.MX 95 (MIMX9536CVZXNAC)**
-- **Specs:** Hexa-core Cortex-A55, Cortex-M7, Cortex-M33, ~2 TOPS eIQ Neutron NPU.
-- **Why it was chosen:** It provides an incredible balance of modern compute and real-time determinism. Crucially, the 19x19 mm package offers a **0.7 mm BGA pitch**, which when combined with modern PCB manufacturing capabilities (like free via-in-pad on 6+ layer boards), makes routing high-speed memory and IO exceptionally easy without expensive HDI microvias.
-- **Deep Dive:** See the [i.MX 95 System Design & Block Diagram](docs/architecture/imx95-system-design.md) for full implementation details.
+**Selected SoC: NXP i.MX 8M Plus (MIMX8ML8CVNKZAB)**
+- **Specs:** Quad-core Cortex-A53, Cortex-M7, 2.3 TOPS Neural Processing Unit (NPU).
+- **Why it was chosen:** It provides excellent robotics compute capabilities with 100% public documentation (no NDA required) and is natively stocked at LCSC. The 0.5 mm pitch BGA can be routed on 6-layer boards using JLCPCB's free via-in-pad (POFV) technology.
+- **Deep Dive:** See the [i.MX 8M Plus System Design & Block Diagram](docs/architecture/imx8mp-system-design.md) for full implementation details.
 
 For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](hardware/processing/soc-candidates.md).
 
@@ -161,7 +161,7 @@ For a detailed comparison of all evaluated candidates, see the [SoC Candidates D
 - [Architecture Overview](docs/architecture/system-overview.md)
 - [System Requirements](docs/requirements/system-requirements.md)
 - [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md)
-- [i.MX 95 System Architecture](docs/architecture/imx95-system-design.md)
+- [i.MX 8M Plus System Architecture](docs/architecture/imx8mp-system-design.md)
 - [Decision Log](docs/decisions/decision-log.md)
 
 ## Contributing / Development Notes
