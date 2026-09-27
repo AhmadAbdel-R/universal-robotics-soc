@@ -86,9 +86,9 @@ flowchart TD
 | **AI** | Hardware accelerator strongly preferred |
 | **GPU** | Hardware graphics/compute preferred |
 | **Real-Time** | Integrated RT core preferred; external MCU remains an option |
-| **Storage** | eMMC preferred/required; NVMe/UFS desirable |
-| **PCIe** | At least one interface strongly preferred |
-| **USB** | USB 3.x strongly preferred |
+| **Storage** | eMMC required (64GB+) for OS; NVMe SSD supported via expansion slot |
+| **PCIe** | Single Gen3 lane required. Must be routed to a modular M.2 slot for external AI accelerators, GPUs, or NVMe SSDs |
+| **USB** | USB 3.0 strongly preferred |
 | **Ethernet** | ≥1 GbE; multiple ports, TSN, 2.5/10GbE desirable |
 | **CAN** | CAN-FD strongly preferred |
 | **Camera** | MIPI CSI strongly preferred |

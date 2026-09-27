@@ -123,7 +123,7 @@ When the i.MX 8M Plus boots with a blank eMMC/Flash, its Boot ROM automatically 
 ### 3. Mass Storage (eMMC 5.1)
 - **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia THGBM series** (64GB, 128GB, or 256GB).
 - **Datasheet Ref:** See **i.MX 8M Plus Datasheet, Section 3.9 (uSDHC Electrical Characteristics)** for clock margins.
-- **Why High Capacity:** The i.MX 8M Plus has only a single **PCIe Gen3 lane**. We are explicitly **reserving this PCIe lane** for high-bandwidth external hardware (such as a Coral Edge TPU for AI, a Hailo-8 accelerator, an M.2 WiFi 6 card, or even an external GPU experiment). Because we cannot use the PCIe lane for an NVMe M.2 SSD, the onboard eMMC must provide all the bulk storage for the OS, robotics models, and data logging. Therefore, a massive eMMC (64GB+) is strictly required to compensate for the lack of NVMe.
+- **Why High Capacity:** The i.MX 8M Plus has only a single **PCIe Gen3 lane**. We are explicitly **reserving this PCIe lane** via a standard M.2 slot for high-bandwidth external hardware. This allows the user to plug in a Coral Edge TPU for AI, an M.2 WiFi 6 card, an external GPU, OR an **external M.2 NVMe SSD** if they need terabytes of storage. Because the PCIe lane is a modular expansion slot rather than a hardwired SSD, the onboard eMMC must provide all the primary bulk storage for the OS. Therefore, a massive eMMC (64GB+) is strictly required.
 
 ### 4. Configuration Boot Flash (QSPI)
 - **Recommendation:** **Macronix MX25L** or **Winbond W25Q series**.
