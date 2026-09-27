@@ -12,14 +12,68 @@ These external demands act as strict constraints on the central processing archi
 
 ## Formal Requirements
 
-| ID | Requirement | Priority | Verification | Status |
-|---|---|---|---|---|
-| SYS-001 | Platform shall support Linux | MUST | Boot Test | Open |
-| MEM-001 | System shall support ≥512 MB RAM | MUST | Inspection / Boot Test | Open |
-| PWR-001 | Low-power and high-performance operating modes desirable | SHOULD | Measurement | Open |
-| HSI-001 | At least one PCIe interface strongly preferred | SHOULD | Inspection | Open |
-| RIO-001 | CAN-FD strongly preferred | SHOULD | Test | Open |
-| PCB-001 | Initial target approximately 6–10 layers | MUST | Inspection | Open |
+
+| ID 
+| Requirement 
+| Priority 
+| Verification 
+| Status 
+|
+
+|---
+|---
+|---
+|---
+|---
+|
+
+| SYS-001 
+| Platform shall support Linux 
+| MUST 
+| Boot Test 
+| Open 
+|`n
+| SYS-002 
+| All BOM components MUST be natively sourced from the LCSC catalog to ensure low-cost JLCPCB assembly 
+| MUST 
+| BOM Review 
+| Open 
+|
+
+| MEM-001 
+| System shall support ≥512 MB RAM 
+| MUST 
+| Inspection / Boot Test 
+| Open 
+|
+
+| PWR-001 
+| Low-power and high-performance operating modes desirable 
+| SHOULD 
+| Measurement 
+| Open 
+|
+
+| HSI-001 
+| At least one PCIe interface strongly preferred 
+| SHOULD 
+| Inspection 
+| Open 
+|
+
+| RIO-001 
+| CAN-FD strongly preferred 
+| SHOULD 
+| Test 
+| Open 
+|
+
+| PCB-001 
+| Initial target approximately 6–10 layers 
+| MUST 
+| Inspection 
+| Open 
+|
 
 *(More to be added as architecture solidifies)*
 

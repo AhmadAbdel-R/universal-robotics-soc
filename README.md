@@ -101,6 +101,7 @@ flowchart TD
 | **Thermal** | Passive/modest cooling preferred where practical |
 | **Documentation**| Good datasheet, reference manual, HW design guide and BSP strongly preferred |
 | **Availability** | Critical ICs must be realistically purchasable |
+| **Sourcing** | **ALL BOM components MUST be natively sourced from the LCSC catalog to ensure low-cost JLCPCB assembly** |
 | **Cost** | Must remain economically practical |
 | **PCB** | Initial target approximately 6–10 layers, subject to SI requirements |
 
