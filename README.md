@@ -14,6 +14,10 @@ Requirements and constraints influence the choice of the central processing arch
 
 Furthermore, **external peripherals and their protocol requirements** (e.g., LiDAR via Ethernet, high-res cameras via MIPI CSI, motor drivers via CAN-FD) dictate the necessary I/O on the board, which feeds directly back into the SoC selection constraints.
 
+**Selecting Supporting ICs & Mitigating Trade-offs:**
+Just as the SoC is chosen based on requirements, the supporting ICs (power, memory, IO expanders) are strictly chosen based on the SoC's demands *and* the mechanical/cost constraints. 
+For example, an SoC may require multiple different voltage rails. A highly integrated PMIC (Power Management IC) might be the smallest solution, but if it is out of stock or too expensive, a trade-off is to use multiple discrete buck converters. To consolidate the Bill of Materials (BOM), we can use a "repeating supply" approach—using the exact same buck converter IC multiple times across the board, just adjusting the feedback resistors to output different voltages. While this adds slightly more hardware components (the trade-off), it significantly simplifies the supply chain, mitigates part-shortage risks, and lowers unit cost.
+
 Engineering requirements force engineering trade-offs. The objective is therefore NOT:
 *Pick the fastest processor.*
 
