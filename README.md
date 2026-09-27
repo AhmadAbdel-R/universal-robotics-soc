@@ -102,20 +102,20 @@ flowchart TD
 
 ## Current Design Status
 
-The project is currently in **Phase 2 — Select Processing Architecture**. 
-Please see the [Decision Log](docs/decisions/decision-log.md) for ongoing architectural trade-offs.
+The project has completed **Phase 2 — Select Processing Architecture**, officially locking in the **NXP i.MX 95**.
+We are now moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
+Please see the [Decision Log](docs/decisions/decision-log.md) for a record of the architectural trade-offs.
 
 ## SoC Selection
 
-The central compute selection drives the rest of the board architecture. For a detailed comparison and trade-offs of all candidates, see the [SoC Candidates Document](hardware/processing/soc-candidates.md).
+The central compute selection drives the rest of the board architecture. 
 
-**Current Strongest Candidates (Under Evaluation):**
-- **Rockchip RK3576**
-- **NXP i.MX 95**
-- **Rockchip RK3588**
-- **Renesas RZ/V2H**
+**Selected SoC: NXP i.MX 95 (MIMX9536CVZXNAC)**
+- **Specs:** Hexa-core Cortex-A55, Cortex-M7, Cortex-M33, ~2 TOPS eIQ Neutron NPU.
+- **Why it was chosen:** It provides an incredible balance of modern compute and real-time determinism. Crucially, the 19x19 mm package offers a **0.7 mm BGA pitch**, which when combined with modern PCB manufacturing capabilities (like free via-in-pad on 6+ layer boards), makes routing high-speed memory and IO exceptionally easy without expensive HDI microvias.
+- **Deep Dive:** See the [i.MX 95 System Design & Block Diagram](docs/architecture/imx95-system-design.md) for full implementation details.
 
-*Note: The objective is not to build the most powerful processor board, but the highest-performance complete system that satisfies all requirements and constraints.*
+For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](hardware/processing/soc-candidates.md).
 
 ## Repository Structure
 
@@ -131,9 +131,9 @@ The central compute selection drives the rest of the board architecture. For a d
 ## Development Roadmap
 
 - **Phase 0** — Define Mission *(Complete)*
-- **Phase 1** — Freeze High-Level Requirements *(In Progress)*
-- **Phase 2** — Select Processing Architecture *(In Progress)*
-- **Phase 3** — Select Memory / Storage
+- **Phase 1** — Freeze High-Level Requirements *(Complete)*
+- **Phase 2** — Select Processing Architecture *(Complete)*
+- **Phase 3** — Select Memory / Storage *(In Progress)*
 - **Phase 4** — Define Power Architecture
 - **Phase 5** — Define External I/O
 - **Phase 6** — Define Mechanical Form Factor
@@ -149,10 +149,14 @@ The central compute selection drives the rest of the board architecture. For a d
 - **Phase 16** — AI / Robotics Software
 - **Phase 17** — System Validation
 
+*Note: For the detailed step-by-step schematic capture roadmap, see the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).*
+
 ## Documentation
 
 - [Architecture Overview](docs/architecture/system-overview.md)
 - [System Requirements](docs/requirements/system-requirements.md)
+- [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md)
+- [i.MX 95 System Architecture](docs/architecture/imx95-system-design.md)
 - [Decision Log](docs/decisions/decision-log.md)
 
 ## Contributing / Development Notes
