@@ -119,18 +119,15 @@ The central compute selection drives the rest of the board architecture.
 - **Why it was chosen (The Pivot):** We initially targeted the successor (the i.MX 95), but hit a hard "NDA Wall". NXP restricts the hardware design guides for their newest processors behind corporate NDAs, making open-source hardware routing impossible. We pivoted to the i.MX 8M Plus because it still provides excellent robotics compute capabilities, but features **100% public documentation (no NDA required)** and is natively stocked at LCSC. The 0.5 mm pitch BGA can be routed on 6-layer boards using JLCPCB's free via-in-pad (POFV) technology.
 - **Deep Dive:** See the [i.MX 8M Plus System Design & Block Diagram](docs/architecture/imx8mp-system-design.md) for full implementation details.
 
-For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](hardware/processing/soc-candidates.md).
+For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](docs/decisions/soc-candidates.md).
 
 ## Repository Structure
 
-- [docs/](docs/) - Architecture, Requirements, and Decisions
-- [hardware/](hardware/) - Hardware Engineering Subsystems (Processing, Memory, Power, IO, PCB, Mechanical)
-- [firmware/](firmware/) - Bootloaders and RTOS
-- [linux/](linux/) - BSP, Device Trees, and Drivers
-- [software/](software/) - Robotics and AI Tooling
-- [simulation/](simulation/) - Hardware and Physics Simulations
-- [test/](test/) - Bring-up and Validation
-- [references/](references/) - Datasheets and Reference Manuals
+To keep navigation simple while in the architecture phase, the repository is currently flattened into a documentation-first structure. Directories for `hardware/` (KiCad files) and `linux/` (Device Trees) will be generated as we progress through the design sequence.
+
+- [docs/architecture/](docs/architecture/) - High-level system design, stackup constraints, and block diagrams.
+- [docs/requirements/](docs/requirements/) - Mission parameters and system constraints.
+- [docs/decisions/](docs/decisions/) - Architectural Decision Records (ADRs) and component evaluation logs.
 
 ## Development Roadmap
 
