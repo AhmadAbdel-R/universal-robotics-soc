@@ -107,7 +107,7 @@ flowchart TD
 
 ## Current Design Status
 
-The project has completed **Phase 2 — Select Processing Architecture**, pivoting from the i.MX 95 to officially lock in the **NXP i.MX 8M Plus** due to documentation availability and native LCSC stock.
+The project has completed **Phase 2 — Select Processing Architecture**, pivoting from the i.MX 95 to officially lock in the **STMicroelectronics STM32MP257**
 We are now moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
 Please see the [Decision Log](docs/decisions/decision-log.md) for a record of the architectural trade-offs.
 
@@ -115,10 +115,10 @@ Please see the [Decision Log](docs/decisions/decision-log.md) for a record of th
 
 The central compute selection drives the rest of the board architecture. 
 
-**Selected SoC: NXP i.MX 8M Plus (MIMX8ML8CVNKZAB)**
-- **Specs:** Quad-core Cortex-A53, Cortex-M7, 2.3 TOPS Neural Processing Unit (NPU).
-- **Why it was chosen (The Pivot):** We initially targeted the successor (the i.MX 95), but hit a hard "NDA Wall". NXP restricts the hardware design guides for their newest processors behind corporate NDAs, making open-source hardware routing impossible. We pivoted to the i.MX 8M Plus because it still provides excellent robotics compute capabilities, but features **100% public documentation (no NDA required)** and is natively stocked at LCSC. The 0.5 mm pitch BGA can be routed on 6-layer boards using JLCPCB's free via-in-pad (POFV) technology.
-- **Deep Dive:** See the [i.MX 8M Plus System Design & Block Diagram](docs/architecture/imx8mp-system-design.md) for full implementation details.
+**Selected SoC: STMicroelectronics STM32MP257**
+- **Specs:** Dual-core Cortex-A35, Cortex-M33, 1.35 TOPS Neural Processing Unit (NPU).
+- **Why it was chosen (The Pivot):** We initially targeted NXP processors, but hit a hard NDA Wall and CDN firewalls that block open access to critical hardware routing guides. We pivoted to the STM32MP257 because it provides a complete robotics powerhouse paired with STs legendary 100% public documentation and an inherently cheaper ecosystem.
+- **Deep Dive:** See the [STM32MP257 System Design & Block Diagram](docs/architecture/stm32mp25-system-design.md) for full implementation details.
 
 For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](docs/decisions/soc-candidates.md).
 
@@ -160,7 +160,7 @@ To keep navigation simple while in the architecture phase, the repository is cur
 - [Architecture Overview](docs/architecture/system-overview.md)
 - [System Requirements](docs/requirements/system-requirements.md)
 - [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md)
-- [i.MX 8M Plus System Architecture](docs/architecture/imx8mp-system-design.md)
+- [STM32MP257 System Architecture](docs/architecture/stm32mp25-system-design.md)
 - [PCB Stackup & Impedance Constraints](docs/architecture/pcb-stackup-constraints.md)
 - [Decision Log](docs/decisions/decision-log.md)
 

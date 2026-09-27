@@ -3,7 +3,7 @@
 ## The "Common Ground" Challenge
 To keep manufacturing costs low and avoid exotic HDI PCB fabrication, we are targeting a standard **6-layer or 8-layer** stackup at JLCPCB.
 
-However, the i.MX 8M Plus system requires multiple high-speed interfaces, each with different controlled impedance targets:
+However, the STM32MP257 system requires multiple high-speed interfaces, each with different controlled impedance targets:
 - **LPDDR4:** 40-ohm Single-Ended (SE), 80-ohm Differential (Diff)
 - **PCIe Gen3:** 85-ohm or 100-ohm Diff
 - **USB 3.0:** 90-ohm Diff

@@ -1,6 +1,6 @@
-# Hardware Design Sequence (i.MX 8M Plus)
+# Hardware Design Sequence (STM32MP257)
 
-Because the SoC acts as the central hub that influences every other subsystem, the hardware schematic capture and PCB layout must follow a strict sequential order. This document outlines the step-by-step roadmap for designing the universal robotics board around the NXP i.MX 8M Plus (`MIMX8ML8CVNKZAB`).
+Because the SoC acts as the central hub that influences every other subsystem, the hardware schematic capture and PCB layout must follow a strict sequential order. This document outlines the step-by-step roadmap for designing the universal robotics board around the NXP STM32MP257 (`STM32MP257`).
 
 ## Phase 1: Boot, Flashing, & Debugging
 Before the processor can do anything, we must ensure it can be programmed from a factory-blank state.
@@ -15,7 +15,7 @@ To prevent the board from being "bricked" during Linux OS updates, the primary b
 
 ## Phase 3: Main Memory (LPDDR4)
 The most complex and critical high-speed layout task.
-- **Select Memory Standard:** The i.MX 8M Plus utilizes LPDDR4 at 3200 MT/s.
+- **Select Memory Standard:** The STM32MP257 utilizes LPDDR4 at 3200 MT/s.
 - **Memory Topology:** Implement a **Point-to-Point topology** using a single 32-bit RAM chip. Do NOT use a Fly-by topology with dual 16-bit chips to preserve the 6-layer stackup simplicity.
 - **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes) and impedance targets (40-ohm SE, 80-ohm Diff).
 
@@ -36,5 +36,5 @@ The most complex and critical high-speed layout task.
 Power is purposely designed **last**. We cannot finalize the power architecture until we have selected the RAM, eMMC, PHYs, and external IO, because their voltage levels influence the total power budget.
 - **Consolidate Voltage Rails:** Analyze the voltage requirements of all selected chips (e.g., 1.8V, 3.3V) and consolidate them to reduce the BOM count (using the repeating discrete supply strategy where possible).
 - **Power Budgeting & Simulation:** Calculate the maximum current draw across all rails, establish a power budget, and simulate the thermal load.
-- **Core PMIC Selection:** Select the core PMIC (e.g., PCA9460) to handle the strict power-up/power-down sequencing required by the i.MX 8M Plus.
+- **Core PMIC Selection:** Select the core PMIC (e.g., STPMIC2) to handle the strict power-up/power-down sequencing required by the STM32MP257.
 - **Decoupling:** Map out the exact placement of local decoupling capacitors for the BGA power rails.

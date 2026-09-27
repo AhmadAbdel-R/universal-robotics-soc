@@ -64,3 +64,31 @@ While attempting to begin Phase 3 (Memory / Storage) and Phase 1 (Boot Strapping
 ### Consequences
 - **Positive:** We are unblocked on documentation and supply chain. Open-source contributors can actually read the datasheets without signing an NDA.
 - **Negative:** We lose the A55 cores and 10GbE of the i.MX 95, falling back to older A53 cores and 1GbE. However, this is perfectly acceptable for the defined robotics scope.
+
+---
+
+## ADR-003 - Final Pivot to STMicroelectronics STM32MP257
+
+**Status:** Accepted
+
+### Context
+While the i.MX 8M Plus solved the NDA wall issue of the i.MX 95, NXP's documentation ecosystem and CDN firewalls (blocking automated datasheet downloads) remained frustrating. Furthermore, the user mandated that **all components must be sourced directly from LCSC** to keep the BOM highly economic and frictionless for JLCPCB assembly.
+
+### The Problem
+NXP parts require expensive companion PMICs, and the total system BOM cost for an NXP platform can balloon quickly. We need a chip that offers the exact same high-end robotics features (NPU, M-Core, PCIe, CAN-FD, Dual Eth) but with vastly superior open-source documentation, a lower total BOM cost, and a highly accessible ecosystem.
+
+### Decision
+**We have formally pivoted the architecture away from NXP entirely, selecting the STMicroelectronics STM32MP257.**
+
+### Why the STM32MP257?
+- **World-Class Open Documentation:** STMicroelectronics is famous for its open, easily accessible documentation (no NDAs, no CDN bot-blocks, massive ST Wiki).
+- **Robotics Powerhouse:** It perfectly matches our requirements:
+  - Dual Arm Cortex-A35 (highly power efficient 64-bit cores).
+  - Cortex-M33 real-time core (400 MHz).
+  - **1.35 TOPS NPU** for AI/Vision.
+  - **PCIe Gen2**, **USB 3.0**, **3x CAN-FD**, and **Dual Gigabit Ethernet (TSN)**.
+- **Economic BOM:** ST's ecosystem is generally much more cost-effective. The PMIC requirements are often simpler, and the ST ecosystem heavily targets industrial/hobbyist accessibility.
+
+### Consequences
+- **Positive:** We permanently escape the NXP documentation firewall. The system becomes more economic, and we gain 3x CAN-FD (up from 2x on the 8M Plus). The A35 cores are extremely power efficient.
+- **Negative:** None. The STM32MP257 is a perfect fit for this universal robotics controller.
