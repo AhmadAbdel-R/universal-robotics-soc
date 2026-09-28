@@ -91,10 +91,10 @@ When the STM32MP25 boots with a blank eMMC/Flash, it falls back to a serial boot
 - **Why:** Handles the exact power-up/power-down sequencing required by the STM32MP25 without needing a massive array of discrete buck converters.
 
 ### 2. Main Memory (LPDDR4)
-- **Recommendation:** **Micron MT53E series** (e.g., 2GB or 4GB LPDDR4) or equivalent Samsung memory.
+- **Recommendation:** **Micron MT53E1G32D2FW-046 IT:A** (4GB, 32-bit, Point-to-Point).
 
 ### 3. Mass Storage (eMMC 5.1)
-- **Recommendation:** **SanDisk/Western Digital iNAND** or **Kioxia THGBM series** (64GB, 128GB, or 256GB).
+- **Recommendation:** **FORESEE FEMDRW064G-88A19** (64GB, eMMC 5.1).
 - **Why High Capacity:** The STM32MP257 has a single **PCIe Gen2 lane**. We are explicitly **reserving this PCIe lane** via a standard M.2 slot for high-bandwidth external hardware (Coral Edge TPU, NVMe SSD, WiFi 6). Because the PCIe lane is a modular expansion slot, the onboard eMMC must provide all the primary bulk storage for the OS. Therefore, a massive eMMC (64GB+) is strictly required.
 
 ### 4. Wireless (WiFi / Bluetooth)
@@ -102,7 +102,11 @@ When the STM32MP25 boots with a blank eMMC/Flash, it falls back to a serial boot
 - **Why:** We want built-in WiFi, but we cannot use the PCIe lane because it is reserved for the modular M.2 expansion slot. The STM32MP25 features secondary SDMMC interfaces perfectly suited for SDIO WiFi/BT combos.
 
 ### 5. Configuration Boot Flash (QSPI/OSPI)
-- **Recommendation:** **Macronix MX25L** or **Winbond W25Q series**.
+- **Recommendation:** **Winbond W25Q256JVFIQ** (32MB QSPI NOR).
 
 ### 6. High-Speed Switches / PHYs (Ethernet)
-- **Ethernet PHY:** **Microchip KSZ9131** or **Realtek RTL8211F** (Gigabit PHYs with RGMII). These are natively supported by the mainline Linux kernel.
+- **Ethernet PHY:** **Texas Instruments DP83867IRRGZR** (Gigabit RGMII PHY with excellent programmable delay and diagnostics).
+
+### 7. CAN-FD Transceivers
+- **Recommendation:** **Texas Instruments TCAN1044AVDRQ1**.
+- **Why:** Supports up to 8 Mbps, features a dedicated VIO pin for direct 1.8V logic interfacing with the STM32MP257 without level shifters, and is highly stocked on LCSC.

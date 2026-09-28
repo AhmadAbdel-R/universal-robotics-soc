@@ -92,3 +92,33 @@ NXP parts require expensive companion PMICs, and the total system BOM cost for a
 ### Consequences
 - **Positive:** We permanently escape the NXP documentation firewall. The system becomes more economic, and we gain 3x CAN-FD (up from 2x on the 8M Plus). The A35 cores are extremely power efficient.
 - **Negative:** None. The STM32MP257 is a perfect fit for this universal robotics controller.
+
+---
+
+## ADR-004 - Peripheral IC Selection (STM32MP257 Architecture)
+
+**Status:** Accepted
+
+### Context
+With the core processor locked to the STM32MP257, we needed to select specific peripheral ICs that satisfied both the SoC's technical requirements (e.g., 1.8V IO domains, RGMII, LPDDR4) and the project's rigid supply-chain requirement: **All ICs must be natively stocked by LCSC for JLCPCB SMT assembly.**
+
+### The Decisions & Rationale
+
+1. **CAN-FD Transceivers (3x): Texas Instruments TCAN1044AVDRQ1**
+   - *Why:* The 'V' variant features a separate VIO pin. The physical CAN bus runs at 5V, but the STM32MP257 FDCAN digital IO runs at 1.8V. By supplying 1.8V to the transceiver's VIO pin, we can interface the transceiver directly to the STM32MP257 without needing external level shifters. It supports up to 8 Mbps and is heavily stocked.
+
+2. **Gigabit Ethernet PHY (2x): Texas Instruments DP83867IRRGZR**
+   - *Why:* Gigabit RGMII routing is notoriously difficult because of strict timing requirements between the clock and data lines. The DP83867 features highly programmable internal RX/TX delays, allowing us to fix trace-length mismatch issues in software. It natively supports 1.8V RGMII IO and has mature mainline Linux kernel support.
+
+3. **LPDDR4 System Memory: Micron MT53E1G32D2FW-046 IT:A (4GB)**
+   - *Why:* A single-chip 32-bit Point-to-Point topology keeps the PCB routing to 6 layers. 4GB provides massive headroom for AI models and ROS2 containers. (A 2GB variant, MT53E512M32D1ZW, is an acceptable fallback depending on LCSC stock at the time of manufacturing).
+
+4. **eMMC Storage: FORESEE FEMDRW064G-88A19 (64GB)**
+   - *Why:* The single PCIe Gen2 lane is reserved for an M.2 expansion slot (AI accelerators or NVMe), meaning the board cannot rely on a hardwired NVMe SSD for the root OS. A 64GB eMMC 5.1 chip provides ample built-in storage for a heavy Linux rootfs.
+
+5. **Serial NOR Boot Flash: Winbond W25Q256JVFIQ (32MB)**
+   - *Why:* Standard 3.3V QSPI NOR flash. 32MB gives plenty of room for TF-A, U-Boot, and redundant recovery images.
+
+### Consequences
+- **Positive:** We have a complete, highly-integrated BOM that requires zero level-shifters for CAN or Ethernet, drastically simplifying the PCB routing. Programmable RGMII delays will save us from timing-related board spins.
+- **Negative:** The TI Ethernet PHYs are slightly more expensive than basic Realtek PHYs, but the programmable delay features are well worth the cost to prevent a dead board.
