@@ -122,3 +122,19 @@ With the core processor locked to the STM32MP257, we needed to select specific p
 ### Consequences
 - **Positive:** We have a complete, highly-integrated BOM that requires zero level-shifters for CAN or Ethernet, drastically simplifying the PCB routing. Programmable RGMII delays will save us from timing-related board spins.
 - **Negative:** The TI Ethernet PHYs are slightly more expensive than basic Realtek PHYs, but the programmable delay features are well worth the cost to prevent a dead board.
+
+---
+
+## ADR-005 - LPDDR4 Fly-By Topology for Maximum Memory Capacity
+
+**Status:** Accepted
+
+### Context
+Initially, we aimed to restrict the LPDDR4 routing to a strict **Point-to-Point** topology (using a single 32-bit memory IC) to guarantee the design could fit on a cheap 6-layer PCB. However, single-chip 32-bit LPDDR4 modules are severely limited in maximum capacity (typically capping out at 2GB or 4GB on standard distributor catalogs). The universal robotics controller requires massive memory overhead for ROS2, vision processing, and local AI models.
+
+### Decision
+We are officially overriding the Point-to-Point constraint and adopting a **Fly-By Topology** utilizing two parallel 16-bit LPDDR4 memory chips.
+
+### Consequences
+- **Positive (Capacity):** By using two 16-bit chips, we can easily achieve 4GB to 8GB of total system RAM using cheap, highly-stocked memory ICs.
+- **Negative (PCB Cost & Complexity):** Routing Address, Command, and Control (ACC) lines in a fly-by chain across two chips is significantly more difficult. This almost certainly breaks our 6-layer PCB constraint, forcing us into an **8-layer stackup** to properly isolate the high-density signal layers and maintain strict impedance control.

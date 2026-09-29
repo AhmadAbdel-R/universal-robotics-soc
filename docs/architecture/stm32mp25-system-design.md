@@ -92,7 +92,7 @@ To strictly satisfy the **LCSC Native Sourcing Mandate (SYS-002)** and minimize 
 | :--- | :--- | :--- | :--- | :--- |
 | **SoC** | STM32MP257F | Dual A35, M33, 1.35 TOPS | [Search LCSC](https://www.lcsc.com/search?q=STM32MP257) | [STM32MP257.pdf](../../references/datasheets/STM32MP257.pdf) |
 | **PMIC** | STPMIC25 | Companion PMIC for MP2 | [Search LCSC](https://www.lcsc.com/search?q=STPMIC25) | [AN5727 Guide](https://www.st.com/resource/en/application_note/an5727-how-to-use-stpmic25-for-a-wall-adapter-powered-application-on-stm32mp25-mpus-stmicroelectronics.pdf) |
-| **LPDDR4** | Micron MT53E512M32D1ZW | 16 Gbit (2 GigaBytes), x32 | [C5330502](https://www.lcsc.com/product-detail/LPDDR_Micron-Tech-MT53E512M32D1ZW-046-IT-B_C5330502.html) | [Micron Portal](https://www.micron.com/products/dram/lpdram) |
+| **LPDDR4 (2x)** | Micron MT53E512M32D1ZW | 16 Gbit (2 GigaBytes), Fly-By Topology (4GB Total) | [C5330502](https://www.lcsc.com/product-detail/LPDDR_Micron-Tech-MT53E512M32D1ZW-046-IT-B_C5330502.html) | [Micron Portal](https://www.micron.com/products/dram/lpdram) |
 | **eMMC** | FORESEE FEMDRW064G | 64GB eMMC 5.1 | [C719927](https://www.lcsc.com/product-detail/eMMC_FORESEE-FEMDRW064G-88A19_C719927.html) | [FORESEE Web](https://www.longsys.com) |
 | **QSPI NOR** | Winbond W25Q256JVFIQ | 32MB QSPI (3.3V) | [C779876](https://www.lcsc.com/product-detail/NOR-FLASH_Winbond-Elec-W25Q256JVFIQ_C779876.html) | [W25Q256JVFIQ.pdf](../../references/datasheets/W25Q256JVFIQ.pdf) |
 | **Eth PHY (2x)**| TI DP83867IRRGZR | Gigabit RGMII (1.8V IO) | [C2678038](https://www.lcsc.com/product-detail/Ethernet-ICs_Texas-Instruments-DP83867IRRGZR_C2678038.html) | [DP83867IR.pdf](../../references/datasheets/DP83867IRRGZR.pdf) |
@@ -100,6 +100,6 @@ To strictly satisfy the **LCSC Native Sourcing Mandate (SYS-002)** and minimize 
 | **JTAG/UART** | FTDI FT2232HL-REEL | Dual USB-to-UART/FIFO | [C46808](https://www.lcsc.com/product-detail/USB-ICs_FTDI-Future-Technology-Devices-International-FT2232HL-REEL_C46808.html) | [FTDI Web](https://ftdichip.com/products/ft2232hq/) |
 
 ### Design Rationale for LCSC Selections
-1. **Memory Capacity:** 2GB (16 Gbit) is heavily stocked on LCSC (C5330502) and significantly cheaper than 4GB. 2GB provides massive headroom for general robotics, ROS2, and embedded Linux.
+1. **Memory Capacity:** By routing two 16-bit 2GB chips in a **Fly-By Topology**, we achieve a massive **4GB of total system RAM** using the heavily stocked and incredibly cheap `C5330502` modules. This gives us immense headroom for ROS2, vision processing, and local AI models, at the cost of pushing the PCB to 8 layers.
 2. **Cost-Effective Sourcing:** The FT2232HL (C46808) and Winbond W25Q256 (C779876) are ubiquitous "Extended" parts on JLCPCB, meaning they are incredibly cheap to assemble.
 3. **No Level Shifters:** The TI TCAN1044A (C3234993) and DP83867 Ethernet PHY (C2678038) both support native 1.8V logic interfacing. We save routing space and BOM cost by entirely eliminating the need for digital level shifters.

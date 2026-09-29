@@ -18,9 +18,9 @@ To prevent the board from being "bricked" during Linux OS updates, the primary b
 ## Phase 3: Main Memory (LPDDR4)
 The most complex and critical high-speed layout task.
 - **Reference Guide:** [AN5724: Guidelines for DDR memory routing on STM32MP2 (PDF)](https://www.st.com/resource/en/application_note/an5724-guidelines-for-ddr-memory-routing-on-stm32mp2-mpus-stmicroelectronics.pdf)
-- **Selected Memory:** [Micron MT53E512M32D1ZW-046 IT:B (2GB, 32-bit)](https://www.lcsc.com/product-detail/LPDDR_Micron-Tech-MT53E512M32D1ZW-046-IT-B_C5330502.html)
-- **Memory Topology:** Implement a **Point-to-Point topology** using a single 32-bit RAM chip. Do NOT use a multi-drop topology to preserve the 6-layer stackup simplicity.
-- **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes) and impedance targets (40-ohm SE, 80-ohm Diff).
+- **Selected Memory:** Dual 16-bit chips to achieve 4GB to 8GB capacity (e.g., Micron MT53E series).
+- **Memory Topology:** Implement a **Fly-By topology** using two parallel 16-bit RAM chips. This will likely push the PCB stackup from 6 layers to 8 layers to accommodate the routing density.
+- **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes, and fly-by ACC lines) and impedance targets (40-ohm SE, 80-ohm Diff).
 
 ## Phase 4: Mass Storage (eMMC)
 - **Selected eMMC 5.1 Chip:** [FORESEE FEMDRW064G-88A19 (64GB)](https://www.lcsc.com/product-detail/eMMC_FORESEE-FEMDRW064G-88A19_C719927.html)
