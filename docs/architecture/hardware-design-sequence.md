@@ -18,7 +18,7 @@ To prevent the board from being "bricked" during Linux OS updates, the primary b
 ## Phase 3: Main Memory (LPDDR4)
 The most complex and critical high-speed layout task.
 - **Reference Guide:** [AN5724: Guidelines for DDR memory routing on STM32MP2 (PDF)](https://www.st.com/resource/en/application_note/an5724-guidelines-for-ddr-memory-routing-on-stm32mp2-mpus-stmicroelectronics.pdf)
-- **Selected Memory:** [Micron MT53E1G32D2FW-046 IT:A (4GB, 32-bit)](https://www.micron.com/products/dram/lpdram/part-catalog/mt53e1g32d2fw-046-it)
+- **Selected Memory:** [Micron MT53E512M32D1ZW-046 IT:B (2GB, 32-bit)](https://www.lcsc.com/product-detail/LPDDR_Micron-Tech-MT53E512M32D1ZW-046-IT-B_C5330502.html)
 - **Memory Topology:** Implement a **Point-to-Point topology** using a single 32-bit RAM chip. Do NOT use a multi-drop topology to preserve the 6-layer stackup simplicity.
 - **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes) and impedance targets (40-ohm SE, 80-ohm Diff).
 

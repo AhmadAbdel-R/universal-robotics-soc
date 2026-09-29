@@ -84,29 +84,22 @@ When the STM32MP25 boots with a blank eMMC/Flash, it falls back to a serial boot
 - **Recommendation:** **We will integrate an FTDI FT2232HL (Dual Channel USB-to-UART/FIFO).** 
 - **Why:** Ease-of-use is a massive priority. Putting an FTDI chip directly on the board allows developers to plug in a single USB cable and instantly get both a **Serial UART Console** (for Linux/U-Boot logs) and a **JTAG interface** (for bare-metal debugging).
 
-## Recommended Supporting ICs & References
+## Recommended Supporting ICs (LCSC Sourcing Locked)
 
-### 1. Power Management (PMIC)
-- **Recommendation:** **STPMIC2** (ST's companion PMIC for the STM32MP2 series).
-- **Why:** Handles the exact power-up/power-down sequencing required by the STM32MP25 without needing a massive array of discrete buck converters.
+To strictly satisfy the **LCSC Native Sourcing Mandate (SYS-002)** and minimize BOM cost, the following highly-available, economic ICs have been selected:
 
-### 2. Main Memory (LPDDR4)
-- **Recommendation:** **[Micron MT53E1G32D2FW-046 IT:A](https://www.micron.com/products/dram/lpdram/part-catalog/mt53e1g32d2fw-046-it)** (4GB, 32-bit, Point-to-Point).
+| Subsystem | Part Number | Capacity / Specs | LCSC Part | Datasheet |
+| :--- | :--- | :--- | :--- | :--- |
+| **SoC** | STM32MP257F | Dual A35, M33, 1.35 TOPS | [Search LCSC](https://www.lcsc.com/search?q=STM32MP257) | [STM32MP257.pdf](../../references/datasheets/STM32MP257.pdf) |
+| **PMIC** | STPMIC25 | Companion PMIC for MP2 | [Search LCSC](https://www.lcsc.com/search?q=STPMIC25) | [AN5727 Guide](https://www.st.com/resource/en/application_note/an5727-how-to-use-stpmic25-for-a-wall-adapter-powered-application-on-stm32mp25-mpus-stmicroelectronics.pdf) |
+| **LPDDR4** | Micron MT53E512M32D1ZW | 16 Gbit (2 GigaBytes), x32 | [C5330502](https://www.lcsc.com/product-detail/LPDDR_Micron-Tech-MT53E512M32D1ZW-046-IT-B_C5330502.html) | [Micron Portal](https://www.micron.com/products/dram/lpdram) |
+| **eMMC** | FORESEE FEMDRW064G | 64GB eMMC 5.1 | [C719927](https://www.lcsc.com/product-detail/eMMC_FORESEE-FEMDRW064G-88A19_C719927.html) | [FORESEE Web](https://www.longsys.com) |
+| **QSPI NOR** | Winbond W25Q256JVFIQ | 32MB QSPI (3.3V) | [C779876](https://www.lcsc.com/product-detail/NOR-FLASH_Winbond-Elec-W25Q256JVFIQ_C779876.html) | [W25Q256JVFIQ.pdf](../../references/datasheets/W25Q256JVFIQ.pdf) |
+| **Eth PHY (2x)**| TI DP83867IRRGZR | Gigabit RGMII (1.8V IO) | [C2678038](https://www.lcsc.com/product-detail/Ethernet-ICs_Texas-Instruments-DP83867IRRGZR_C2678038.html) | [DP83867IR.pdf](../../references/datasheets/DP83867IRRGZR.pdf) |
+| **CAN-FD (3x)** | TI TCAN1044AVDRQ1 | 8 Mbps, 1.8V VIO Pin | [C3234993](https://www.lcsc.com/product-detail/CAN-ICs_Texas-Instruments-TCAN1044AVDRQ1_C3234993.html) | [TCAN1044AV.pdf](../../references/datasheets/TCAN1044AVDRQ1.pdf) |
+| **JTAG/UART** | FTDI FT2232HL-REEL | Dual USB-to-UART/FIFO | [C46808](https://www.lcsc.com/product-detail/USB-ICs_FTDI-Future-Technology-Devices-International-FT2232HL-REEL_C46808.html) | [FTDI Web](https://ftdichip.com/products/ft2232hq/) |
 
-### 3. Mass Storage (eMMC 5.1)
-- **Recommendation:** **[FORESEE FEMDRW064G-88A19](https://www.lcsc.com/product-detail/eMMC_FORESEE-FEMDRW064G-88A19_C719927.html)** (64GB, eMMC 5.1).
-- **Why High Capacity:** The STM32MP257 has a single **PCIe Gen2 lane**. We are explicitly **reserving this PCIe lane** via a standard M.2 slot for high-bandwidth external hardware (Coral Edge TPU, NVMe SSD, WiFi 6). Because the PCIe lane is a modular expansion slot, the onboard eMMC must provide all the primary bulk storage for the OS. Therefore, a massive eMMC (64GB+) is strictly required.
-
-### 4. Wireless (WiFi / Bluetooth)
-- **Recommendation:** **Ampak AP6256** (or similar Murata 1MW SDIO module).
-- **Why:** We want built-in WiFi, but we cannot use the PCIe lane because it is reserved for the modular M.2 expansion slot. The STM32MP25 features secondary SDMMC interfaces perfectly suited for SDIO WiFi/BT combos.
-
-### 5. Configuration Boot Flash (QSPI/OSPI)
-- **Recommendation:** **[Winbond W25Q256JVFIQ](../../references/datasheets/W25Q256JVFIQ.pdf)** (32MB QSPI NOR).
-
-### 6. High-Speed Switches / PHYs (Ethernet)
-- **Ethernet PHY:** **[Texas Instruments DP83867IRRGZR](../../references/datasheets/DP83867IRRGZR.pdf)** (Gigabit RGMII PHY with excellent programmable delay and diagnostics).
-
-### 7. CAN-FD Transceivers
-- **Recommendation:** **[Texas Instruments TCAN1044AVDRQ1](../../references/datasheets/TCAN1044AVDRQ1.pdf)**.
-- **Why:** Supports up to 8 Mbps, features a dedicated VIO pin for direct 1.8V logic interfacing with the STM32MP257 without level shifters, and is highly stocked on LCSC.
+### Design Rationale for LCSC Selections
+1. **Memory Capacity:** 2GB (16 Gbit) is heavily stocked on LCSC (C5330502) and significantly cheaper than 4GB. 2GB provides massive headroom for general robotics, ROS2, and embedded Linux.
+2. **Cost-Effective Sourcing:** The FT2232HL (C46808) and Winbond W25Q256 (C779876) are ubiquitous "Extended" parts on JLCPCB, meaning they are incredibly cheap to assemble.
+3. **No Level Shifters:** The TI TCAN1044A (C3234993) and DP83867 Ethernet PHY (C2678038) both support native 1.8V logic interfacing. We save routing space and BOM cost by entirely eliminating the need for digital level shifters.
