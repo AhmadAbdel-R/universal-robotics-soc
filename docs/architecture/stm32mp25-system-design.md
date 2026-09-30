@@ -99,6 +99,9 @@ To strictly satisfy the **LCSC Native Sourcing Mandate (SYS-002)** and minimize 
 | **Eth PHY (2x)**| TI DP83867IRRGZR | Gigabit RGMII (1.8V IO) | [C2678038](https://www.lcsc.com/product-detail/Ethernet-ICs_Texas-Instruments-DP83867IRRGZR_C2678038.html) | [DP83867IR.pdf](../../references/datasheets/DP83867IRRGZR.pdf) |
 | **CAN-FD (3x)** | TI TCAN1044AVDRQ1 | 8 Mbps, 1.8V VIO Pin | [C3234993](https://www.lcsc.com/product-detail/CAN-ICs_Texas-Instruments-TCAN1044AVDRQ1_C3234993.html) | [TCAN1044AV.pdf](../../references/datasheets/TCAN1044AVDRQ1.pdf) |
 | **JTAG/UART** | FTDI FT2232HL-REEL | Dual USB-to-UART/FIFO | [C46808](https://www.lcsc.com/product-detail/USB-ICs_FTDI-Future-Technology-Devices-International-FT2232HL-REEL_C46808.html) | [FTDI Web](https://ftdichip.com/products/ft2232hq/) |
+| **WiFi / BT** | Ampak AP6256 | 802.11ac Wi-Fi & BT 5.0 (SDIO/UART) | [C2843076](https://www.lcsc.com/search?q=AP6256) | [Ampak Portal](http://www.ampak.com.tw) |
+| **USB HS PHY** | *Integrated in SoC* | STM32MP257 has embedded PHYs | N/A | See Datasheet Section 3.58 |
+
 
 ### Design Rationale for LCSC Selections
 1. **Memory Capacity:** By routing two 16-bit chips in a **Fly-By Topology**, we easily achieve a massive **4GB of total system RAM** using the heavily stocked and incredibly cheap 2GB modules (`C5330502`). Furthermore, because the Fly-by topology is inherently modular, we can drop-in replace those with 4GB chips to hit an astronomical **8GB of total system RAM** for heavy local LLM/vision processing, at the cost of pushing the PCB to 8 layers.
