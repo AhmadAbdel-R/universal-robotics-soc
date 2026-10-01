@@ -101,6 +101,11 @@ To strictly satisfy the **LCSC Native Sourcing Mandate (SYS-002)** and minimize 
 | **JTAG/UART** | FTDI FT2232HL-REEL | Dual USB-to-UART/FIFO | [C46808](https://www.lcsc.com/product-detail/USB-ICs_FTDI-Future-Technology-Devices-International-FT2232HL-REEL_C46808.html) | [FTDI Web](https://ftdichip.com/products/ft2232hq/) |
 | **WiFi / BT** | Ampak AP6256 | 802.11ac Wi-Fi & BT 5.0 (SDIO/UART) | [C2843076](https://www.lcsc.com/search?q=AP6256) | [Ampak Portal](http://www.ampak.com.tw) |
 | **USB HS PHY** | *Integrated in SoC* | STM32MP257 has embedded PHYs | N/A | See Datasheet Section 3.58 |
+| **Power Inductors (8x)** | Sunlord MWSA201612 | 2.2µH / 3.3µH, 3A+ Power Inductor | [Search LCSC](https://www.lcsc.com/search?q=MWSA201612) | N/A |
+| **HDMI Bridge** | Lontium LT8912B / Sil9022A | MIPI-DSI to HDMI or RGB to HDMI | TBD | N/A |
+| **PCIe Connector** | M.2 Key M Socket | Exposes 1x PCIe Gen2 lane for NVMe/TPU | Standard | N/A |
+
+*Note on Input Protection: The 12V-24V DC input will require robust protection circuitry (TVS diodes, a PTC polyfuse, and potentially an eFuse IC like the TI TPS25982) to clamp voltage spikes from motor back-EMF and prevent overcurrent. Decoupling capacitors will be formalized during schematic capture.*
 
 
 ### Design Rationale for LCSC Selections
