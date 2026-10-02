@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="black" />
+    </marker>
+  </defs>
+
+  <!-- Signal Trace -->
+  <rect x="100" y="50" width="400" height="20" fill="none" stroke="black" stroke-width="2" />
+  <text x="300" y="40" text-anchor="middle" font-family="sans-serif" font-size="14">SIGNAL TRACE</text>
+  <line x1="120" y1="60" x2="480" y2="60" stroke="black" stroke-width="2" marker-end="url(#arrow)" />
+
+  <!-- Loop Indication -->
+  <path d="M 480 80 Q 520 120 480 160" fill="none" stroke="black" stroke-width="2" stroke-dasharray="5,5" />
+  <path d="M 120 160 Q 80 120 120 80" fill="none" stroke="black" stroke-width="2" stroke-dasharray="5,5" />
+
+  <!-- Return Plane -->
+  <rect x="50" y="150" width="500" height="40" fill="none" stroke="black" stroke-width="2" />
+  <text x="300" y="210" text-anchor="middle" font-family="sans-serif" font-size="14">CONTINUOUS REFERENCE PLANE</text>
+  <line x1="480" y1="170" x2="120" y2="170" stroke="black" stroke-width="2" marker-end="url(#arrow)" />
+  <text x="300" y="165" text-anchor="middle" font-family="sans-serif" font-size="12">RETURN CURRENT</text>
+
+  <!-- Annotation -->
+  <text x="300" y="250" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold">large separation = larger loop area = larger inductance.</text>
+</svg>

@@ -1,6 +1,6 @@
 # Universal Robotics SoC
 
-![Status](https://img.shields.io/badge/Status-Early_Architecture-orange)
+![Status](https://img.shields.io/badge/Status-Architecture_Phase-orange)
 
 ## Project Vision
 
@@ -15,8 +15,7 @@ Requirements and constraints influence the choice of the central processing arch
 Furthermore, **external peripherals and their protocol requirements** (e.g., LiDAR via Ethernet, high-res cameras via MIPI CSI, motor drivers via CAN-FD) dictate the necessary I/O on the board, which feeds directly back into the SoC selection constraints.
 
 **Selecting Supporting ICs & Mitigating Trade-offs:**
-Just as the SoC is chosen based on requirements, the supporting ICs (power, memory, IO expanders) are strictly chosen based on the SoC's demands *and* the mechanical/cost constraints. 
-For example, an SoC may require multiple different voltage rails. A highly integrated PMIC (Power Management IC) might be the smallest solution, but if it is out of stock or too expensive, a trade-off is to use multiple discrete buck converters. To consolidate the Bill of Materials (BOM), we can use a "repeating supply" approach—using the exact same buck converter IC multiple times across the board, just adjusting the feedback resistors to output different voltages. While this adds slightly more hardware components (the trade-off), it significantly simplifies the supply chain, mitigates part-shortage risks, and lowers unit cost.
+Just as the SoC is chosen based on requirements, the supporting ICs (power, memory, IO expanders) are strictly chosen based on the SoC's demands *and* the mechanical/cost constraints.
 
 Engineering requirements force engineering trade-offs. The objective is therefore NOT:
 *Pick the fastest processor.*
@@ -45,6 +44,12 @@ The goal is to design a platform capable of being adapted to applications such a
 - sensor processing
 - data acquisition
 - general edge computing
+
+## Locked Processor
+
+**STM32MP257FAI3** — STMicroelectronics  
+Dual Cortex-A35 (Linux) · Cortex-M33 (real-time) · 1.35 TOPS NPU · GPU / ISP  
+TFBGA436 · 18 mm × 18 mm · 0.8 mm pitch
 
 ## High-Level Architecture
 
@@ -76,35 +81,24 @@ flowchart TD
     MEC --> REQ
 ```
 
-## High-Level Requirements
+## Engineering Navigation
 
-| Category | Requirement |
-|---|---|
-| **Operating System** | Linux required |
-| **RAM** | Target 4 GB LPDDR4 |
-| **CPU** | Multi-core 64-bit application processor |
-| **AI** | Hardware accelerator strongly preferred |
-| **GPU** | Hardware graphics/compute preferred |
-| **Real-Time** | Integrated RT core preferred; external MCU remains an option |
-| **Storage** | eMMC required (64GB+) for OS; NVMe SSD supported via expansion slot |
-| **PCIe** | Single Gen2 x1 lane required. Must be routed to a modular M.2 slot for external AI accelerators, GPUs, or NVMe SSDs |
-| **USB** | USB 2.0 / High-Speed supported (USB 3 SuperSpeed PHY is allocated to PCIe) |
-| **Ethernet** | ≥1 GbE; multiple ports, TSN, 2.5/10GbE desirable |
-| **Wireless** | Wi-Fi (802.11ac) & Bluetooth 5.0 required (via SDIO) |
-| **CAN** | CAN-FD strongly preferred |
-| **Camera** | MIPI CSI required (Raspberry Pi-compatible 15/22-pin FFC) |
-| **Display** | HDMI port (via RGB Bridge) AND MIPI DSI (Raspberry Pi-compatible FFC) required |
-| **General I/O** | UART, SPI, I²C, GPIO, PWM |
-| **Advanced I/O** | I3C, ADC, hardware timers/encoder interfaces desirable |
-| **Power** | Low-power and high-performance operating modes desirable |
-| **Mechanical** | Must remain usable in compact robotics applications including drones |
-| **Manufacturing** | Avoid unnecessary PCB/HDI complexity |
-| **Thermal** | Passive/modest cooling preferred where practical |
-| **Documentation**| Good datasheet, reference manual, HW design guide and BSP strongly preferred |
-| **Availability** | Critical ICs must be realistically purchasable |
-| **Sourcing** | **ALL BOM components MUST be natively sourced from the LCSC catalog to ensure low-cost JLCPCB assembly** |
-| **Cost** | Must remain economically practical |
-| **PCB** | Initial target approximately 6–10 layers, subject to SI requirements |
+| Section | Description | Link |
+|---------|-------------|------|
+| **ARCHITECTURE** | System block diagrams, power architecture, peripheral design | [docs/architecture/](docs/architecture/) |
+| **REQUIREMENTS** | Mission parameters and system constraints | [docs/requirements/](docs/requirements/) |
+| **CUBEMX** | STM32CubeMX configuration guide and resource allocation | [CubeMX Guide](docs/architecture/cubemx-configuration-guide.md) |
+| **POWER** | Power tree, battery input, source selection, actuator pass-through | [Power Architecture](docs/architecture/power-architecture.md) |
+| **SENSORS** | IMU, magnetometer, barometer, GNSS architecture | [Sensor I/O](docs/architecture/sensor-io-architecture.md) |
+| **INDUSTRIAL I/O** | RS-485, IO-Link, 24V I/O, isolated CAN | [Industrial I/O](docs/architecture/industrial-io.md) |
+| **COMPONENTS** | Engineering cards for every major IC | [docs/components/](docs/components/) |
+| **CALCULATIONS** | Design calculations: power, PDN, regulators, protection, high-current | [docs/calculations/](docs/calculations/) |
+| **SIMULATIONS** | Simulation framework: power, SI, PI, thermal | [hardware/simulations/](hardware/simulations/) |
+| **PCB / SI / PI** | Stackup, impedance, vias, return paths, fiber weave | [docs/pcb-si-pi/](docs/pcb-si-pi/) |
+| **THERMAL** | Thermal budget, SoC cooling, regulator/connector thermal | [docs/thermal/](docs/thermal/) |
+| **BRING-UP** | Power, DDR, boot, peripheral, RF bring-up procedures | [docs/bringup/](docs/bringup/) |
+| **DECISIONS** | Architectural Decision Records (ADRs) | [docs/decisions/](docs/decisions/) |
+| **CONNECTORS** | Connector architecture and high-current study | [Connector Architecture](docs/architecture/connector-architecture.md) |
 
 ## Current Design Status
 
@@ -112,25 +106,25 @@ The project has completed **Phase 2 — Select Processing Architecture**, pivoti
 We are now verifying the hardware architecture in STM32CubeMX before moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
 Please see the [Decision Log](docs/decisions/decision-log.md) for a record of the architectural trade-offs.
 
-## SoC Selection
+### Key Architecture Decisions
 
-The central compute selection drives the rest of the board architecture. 
-
-**Selected SoC: STMicroelectronics STM32MP257**
-- **Specs:** Dual-core Cortex-A35, Cortex-M33, 1.35 TOPS Neural Processing Unit (NPU).
-- **Why it was chosen (The Pivot):** We initially targeted NXP processors, but hit a hard NDA Wall and CDN firewalls that block open access to critical hardware routing guides. We pivoted to the STM32MP257 because it provides a complete robotics powerhouse paired with STs legendary 100% public documentation and an inherently cheaper ecosystem.
-- **Deep Dive:** See the [STM32MP257 System Design & Block Diagram](docs/architecture/stm32mp25-system-design.md) for full implementation details.
-
-For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](docs/decisions/soc-candidates.md).
-
-## Repository Structure
-
-To keep navigation simple while in the architecture phase, the repository is currently flattened into a documentation-first structure. Directories for `hardware/` (KiCad files, CubeMX) and `linux/` (Device Trees) will be populated as we progress through the design sequence.
-
-- [docs/architecture/](docs/architecture/) - High-level system design, stackup constraints, and block diagrams.
-- [docs/requirements/](docs/requirements/) - Mission parameters and system constraints.
-- [docs/decisions/](docs/decisions/) - Architectural Decision Records (ADRs) and component evaluation logs.
-- [references/datasheets/](references/datasheets/) - Raw PDF datasheets for the core SoC.
+| Item | Status |
+|------|--------|
+| Processor: STM32MP257FAI3 | **LOCKED** |
+| DDR: 4 GB LPDDR4 point-to-point x32 | **LOCKED** |
+| eMMC: 64 GB | **LOCKED** |
+| PCIe/USB3 COMBOPHY: assigned to PCIe Gen2 x1 | **LOCKED** |
+| Battery input class: 2S–8S | **LOCKED** |
+| Compute / actuator power split | **LOCKED** |
+| Power architecture (discrete vs PMIC) | PROPOSED |
+| PowerPath IC selection | PROPOSED |
+| Actuator current specification | NEEDS CALCULATION |
+| PCB stackup | PROPOSED — NEEDS JLCPCB VERIFICATION |
+| Controlled impedance | NEEDS FABRICATOR CALCULATOR |
+| PDN design | NEEDS SIMULATION |
+| Regulator stability | NEEDS SIMULATION |
+| Antenna geometry | NEEDS PCB OUTLINE + MEASUREMENT |
+| CubeMX pin allocation | NEEDS CUBEMX VERIFICATION |
 
 ## Development Roadmap
 
@@ -141,9 +135,9 @@ To keep navigation simple while in the architecture phase, the repository is cur
 - **Phase 4** — Define High-Speed I/O (Ethernet, PCIe, USB, MIPI) *(Complete)*
 - **Phase 5** — Define Robotics I/O (CAN-FD, Serial, PWM, I2C) *(Complete)*
 - **Phase 6** — STM32CubeMX Platform Verification
-- **Phase 7** — Define Power Architecture (Budgeting, Consolidation, PMIC)
+- **Phase 7** — Define Power Architecture (Budgeting, Source Selection, Actuator Pass-Through)
 - **Phase 8** — Define Mechanical Form Factor
-- **Phase 9** — Preliminary Stackup / SI Study
+- **Phase 9** — Preliminary Stackup / SI / PI Study
 - **Phase 10** — Schematic Capture
 - **Phase 11** — PCB Placement / Routing
 - **Phase 12** — Design Review
@@ -157,14 +151,37 @@ To keep navigation simple while in the architecture phase, the repository is cur
 
 *Note: For the detailed step-by-step schematic capture roadmap, see the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).*
 
-## Documentation
+## SoC Selection
 
-- [Architecture Overview](docs/architecture/system-overview.md)
-- [System Requirements](docs/requirements/system-requirements.md)
-- [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md)
-- [STM32MP257 System Architecture](docs/architecture/stm32mp25-system-design.md)
-- [PCB Stackup & Impedance Constraints](docs/architecture/pcb-stackup-constraints.md)
-- [Decision Log](docs/decisions/decision-log.md)
+**Selected SoC: STMicroelectronics STM32MP257**
+- **Specs:** Dual-core Cortex-A35, Cortex-M33, 1.35 TOPS Neural Processing Unit (NPU).
+- **Why it was chosen (The Pivot):** We initially targeted NXP processors, but hit a hard NDA Wall and CDN firewalls that block open access to critical hardware routing guides. We pivoted to the STM32MP257 because it provides a complete robotics powerhouse paired with ST's legendary 100% public documentation and an inherently cheaper ecosystem.
+- **Deep Dive:** See the [STM32MP257 System Architecture](docs/architecture/stm32mp25-system-design.md) for full implementation details.
+
+For a detailed comparison of all evaluated candidates, see the [SoC Candidates Document](docs/decisions/soc-candidates.md).
+
+## Repository Structure
+
+```
+universal-robotics-soc/
+├── docs/
+│   ├── architecture/         # System design, block diagrams, power architecture
+│   ├── requirements/         # Mission parameters and constraints
+│   ├── decisions/            # ADRs and component evaluation logs
+│   ├── calculations/         # Design calculations (power, PDN, regulators, protection)
+│   │   └── protection/       # Fuse, TVS, reverse polarity, surge protection
+│   ├── components/           # IC engineering cards
+│   ├── pcb-si-pi/            # Stackup, impedance, vias, return paths, SI/PI
+│   ├── thermal/              # Thermal budget, cooling, validation
+│   ├── bringup/              # Power, DDR, boot, peripheral bring-up
+│   └── assets/               # SVG technical diagrams
+├── hardware/
+│   ├── stm32mp257/cubemx/    # STM32CubeMX project (.ioc under source control)
+│   ├── power/simulations/    # Power simulation framework
+│   └── simulations/          # SI, PI, thermal simulation roadmaps
+├── linux/device-tree/        # Device tree overlays
+└── references/datasheets/    # Component datasheets
+```
 
 ## Contributing / Development Notes
 *TBD*

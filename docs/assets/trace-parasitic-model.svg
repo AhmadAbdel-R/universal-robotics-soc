@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="black" />
+    </marker>
+  </defs>
+
+  <!-- Source -->
+  <circle cx="50" cy="100" r="20" stroke="black" stroke-width="2" fill="none" />
+  <text x="50" y="105" text-anchor="middle" font-family="sans-serif" font-size="14">SRC</text>
+  <text x="50" y="140" text-anchor="middle" font-family="sans-serif" font-size="12">SOURCE</text>
+
+  <!-- Trace R -->
+  <line x1="70" y1="100" x2="150" y2="100" stroke="black" stroke-width="2" />
+  <polyline points="150,100 160,90 170,110 180,90 190,110 200,90 210,100 230,100" stroke="black" stroke-width="2" fill="none" />
+  <text x="180" y="80" text-anchor="middle" font-family="sans-serif" font-size="14">R_TRACE</text>
+
+  <!-- Trace L -->
+  <path d="M 230 100 C 240 80, 260 80, 270 100 C 280 80, 300 80, 310 100 C 320 80, 340 80, 350 100 L 400 100" stroke="black" stroke-width="2" fill="none" />
+  <text x="290" y="80" text-anchor="middle" font-family="sans-serif" font-size="14">L_TRACE</text>
+
+  <!-- Trace C to GND -->
+  <line x1="330" y1="100" x2="330" y2="150" stroke="black" stroke-width="2" />
+  <line x1="310" y1="150" x2="350" y2="150" stroke="black" stroke-width="2" />
+  <line x1="310" y1="160" x2="350" y2="160" stroke="black" stroke-width="2" />
+  <line x1="330" y1="160" x2="330" y2="210" stroke="black" stroke-width="2" />
+  <text x="360" y="155" font-family="sans-serif" font-size="14">C</text>
+
+  <!-- Load -->
+  <rect x="400" y="70" width="60" height="60" stroke="black" stroke-width="2" fill="none" />
+  <text x="430" y="105" text-anchor="middle" font-family="sans-serif" font-size="14">LOAD</text>
+
+  <!-- Return Path / Reference Plane -->
+  <line x1="50" y1="210" x2="430" y2="210" stroke="black" stroke-width="4" />
+  <line x1="50" y1="120" x2="50" y2="210" stroke="black" stroke-width="2" />
+  <line x1="430" y1="130" x2="430" y2="210" stroke="black" stroke-width="2" />
+  <text x="240" y="240" text-anchor="middle" font-family="sans-serif" font-size="14">RETURN CURRENT (Reference Plane)</text>
+  <line x1="400" y1="220" x2="80" y2="220" stroke="black" stroke-width="2" marker-end="url(#arrow)" />
+
+  <text x="300" y="280" text-anchor="middle" font-family="sans-serif" font-size="14" font-style="italic">A PCB interconnect is a distributed electromagnetic structure, not an ideal wire.</text>
+</svg>

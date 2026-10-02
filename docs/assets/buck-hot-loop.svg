@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="black" />
+    </marker>
+  </defs>
+
+  <text x="50" y="40" font-family="sans-serif" font-size="14">VIN</text>
+  <line x1="80" y1="35" x2="150" y2="35" stroke="black" stroke-width="2" />
+
+  <!-- Input Capacitor -->
+  <line x1="100" y1="35" x2="100" y2="80" stroke="black" stroke-width="2" />
+  <line x1="80" y1="80" x2="120" y2="80" stroke="black" stroke-width="2" />
+  <line x1="80" y1="90" x2="120" y2="90" stroke="black" stroke-width="2" />
+  <line x1="100" y1="90" x2="100" y2="250" stroke="black" stroke-width="2" />
+  <text x="130" y="85" font-family="sans-serif" font-size="12">CIN</text>
+
+  <!-- High-side Switch -->
+  <rect x="150" y="20" width="40" height="30" fill="none" stroke="black" stroke-width="2" />
+  <text x="170" y="40" text-anchor="middle" font-family="sans-serif" font-size="12">HS</text>
+  <line x1="190" y1="35" x2="250" y2="35" stroke="black" stroke-width="2" />
+
+  <!-- SW Node -->
+  <line x1="250" y1="35" x2="250" y2="100" stroke="black" stroke-width="2" />
+  <text x="260" y="50" font-family="sans-serif" font-size="12" font-weight="bold">SW NODE</text>
+
+  <!-- Low-side Switch -->
+  <rect x="230" y="100" width="40" height="30" fill="none" stroke="black" stroke-width="2" />
+  <text x="250" y="120" text-anchor="middle" font-family="sans-serif" font-size="12">LS</text>
+  <line x1="250" y1="130" x2="250" y2="250" stroke="black" stroke-width="2" />
+
+  <!-- Inductor -->
+  <path d="M 250 80 C 270 60, 290 60, 300 80 C 310 60, 330 60, 340 80 C 350 60, 370 60, 380 80 L 450 80" stroke="black" stroke-width="2" fill="none" />
+  <text x="315" y="55" font-family="sans-serif" font-size="12">L</text>
+
+  <!-- Output Cap -->
+  <line x1="400" y1="80" x2="400" y2="130" stroke="black" stroke-width="2" />
+  <line x1="380" y1="130" x2="420" y2="130" stroke="black" stroke-width="2" />
+  <line x1="380" y1="140" x2="420" y2="140" stroke="black" stroke-width="2" />
+  <line x1="400" y1="140" x2="400" y2="250" stroke="black" stroke-width="2" />
+  <text x="430" y="135" font-family="sans-serif" font-size="12">COUT</text>
+
+  <line x1="450" y1="80" x2="500" y2="80" stroke="black" stroke-width="2" />
+  <text x="510" y="85" font-family="sans-serif" font-size="14">VOUT</text>
+
+  <!-- Ground Return -->
+  <line x1="50" y1="250" x2="500" y2="250" stroke="black" stroke-width="4" />
+  <text x="250" y="270" text-anchor="middle" font-family="sans-serif" font-size="14">GROUND RETURN</text>
+
+  <!-- Hot Loop Highlight -->
+  <path d="M 120 45 L 150 45 L 220 45 L 220 120 L 120 120 Z" fill="none" stroke="black" stroke-dasharray="5,5" stroke-width="3" />
+  <text x="170" y="140" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold">HOT LOOP</text>
+
+  <text x="300" y="290" text-anchor="middle" font-family="sans-serif" font-size="12" font-style="italic">SW copper should be large enough for current/thermal but not unnecessarily large.</text>
+</svg>
