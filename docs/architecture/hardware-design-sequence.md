@@ -4,41 +4,49 @@ Because the SoC acts as the central hub that influences every other subsystem, t
 
 > **Essential Reference:** [AN5489: Getting started with STM32MP25xx hardware development (PDF)](https://www.st.com/resource/en/application_note/an5489-getting-started-with-stm32mp25xx-mpus-hardware-development-stmicroelectronics.pdf)
 
-## Phase 1: Boot, Flashing, & Debugging
-Before the processor can do anything, we must ensure it can be programmed from a factory-blank state.
-- **Boot Mode Strapping (DIP Switches):** Design the resistor network and a physical multi-position **DIP Switch Array** for the `BOOT_MODE` pins. This allows developers to manually flip physical switches on the board to toggle between booting from eMMC, QSPI, or forcing the SoC into USB Serial/DFU Downloader mode.
-- **Serial Downloader (USB):** Route the primary USB interface to a Type-C connector. This is mandatory for using **STM32CubeProgrammer** to flash the board initially.
-- **FTDI Debugger (Onboard JTAG/UART):** Integrate the FT2232HL chip directly on the board. Route Channel A to the STM32 JTAG chain, and Channel B to the primary Linux Serial Console (UART). This provides immediate out-of-the-box debug access.
+## 1. Architecture Freeze
+Finalize all system requirements, peripheral selections, and memory topologies (e.g., LPDDR4 Point-to-Point, shared high-speed PHY allocation).
 
-## Phase 2: Configuration Memory (Bootloader)
-To prevent the board from being "bricked" during Linux OS updates, the primary bootloader (TF-A and U-Boot) will live on a separate, highly reliable flash chip.
-- **Select QSPI / Octa-SPI NOR Flash:** [Winbond W25Q256JVFIQ (32MB)](../../references/datasheets/W25Q256JVFIQ.pdf)
-- **OCTOSPI Interface:** Route the OCTOSPI signals from the STM32MP257 to the NOR flash in Quad-SPI mode on a 3.3V IO bank.
+## 2. Exact STM32MP257 Package Selection
+Lock in the physical constraints: **TFBGA436 (18 mm x 18 mm, 0.8 mm pitch, suffix AI)**.
 
-## Phase 3: Main Memory (LPDDR4)
-The most complex and critical high-speed layout task.
-- **Reference Guide:** [AN5724: Guidelines for DDR memory routing on STM32MP2 (PDF)](https://www.st.com/resource/en/application_note/an5724-guidelines-for-ddr-memory-routing-on-stm32mp2-mpus-stmicroelectronics.pdf)
-- **Selected Memory:** Dual 16-bit chips to achieve 4GB to 8GB capacity (e.g., Micron MT53E series).
-- **Memory Topology:** Implement a **Fly-By topology** using two parallel 16-bit RAM chips. This will likely push the PCB stackup from 6 layers to 8 layers to accommodate the routing density.
-- **Impedance & Length Matching:** Define the strict trace length matching rules (byte lanes, clock, strobes, and fly-by ACC lines) and impedance targets (40-ohm SE, 80-ohm Diff).
+## 3. CubeMX Platform Verification
+Before entering KiCad, use **STM32CubeMX** to verify pin multiplexing, I/O voltage-domain compatibility, and Cortex-A35 vs Cortex-M33 resource ownership (RIF/resource isolation configuration). CubeMX is a verification tool; the architecture remains defined by this repository.
 
-## Phase 4: Mass Storage (eMMC)
-- **Selected eMMC 5.1 Chip:** [FORESEE FEMDRW064G-88A19 (64GB)](https://www.lcsc.com/product-detail/eMMC_FORESEE-FEMDRW064G-88A19_C719927.html)
-- **Design Logic:** A massive 64GB eMMC module is required for the Linux OS because the single PCIe Gen2 lane is strictly reserved for M.2 expansion.
-- **SDMMC Routing:** Route the 8-bit eMMC data bus (`SDMMC2` interface), clock, and command lines following AN5489 guidelines.
+## 4. DDR Verification/Configuration
+- **Reference:** [AN5724: Guidelines for DDR memory routing on STM32MP2 (PDF)](https://www.st.com/resource/en/application_note/an5724-guidelines-for-ddr-memory-routing-on-stm32mp2-mpus-stmicroelectronics.pdf)
+- Use CubeMX to configure the **Point-to-Point, 32-bit single-rank LPDDR4** interface.
 
-## Phase 5: High-Speed I/O
-- **Networking (Dual Ethernet):** Route the two Gigabit Ethernet MACs (one with TSN) to the selected [Texas Instruments DP83867IRRGZR RGMII PHYs](../../references/datasheets/DP83867IRRGZR.pdf). Route the PHYs to standard **RJ45 connectors with integrated magnetics**.
-- **Expansion (M.2 PCIe):** Route the single PCIe Gen2 lane to an **M.2 Key-M Slot**. This preserves modularity, allowing users to plug in NVMe SSDs, Coral Edge TPUs, or M.2 WiFi 6 cards as needed.
-- **Cameras/Display:** Route the MIPI-CSI and MIPI-DSI interfaces to standard 15-pin FFC connectors or high-speed board-to-board connectors for robotics vision and HMI.
+## 5. Boot / Recovery / Debug Verification
+- **Boot Mode Strapping:** Assign `BOOT_MODE` pins for DIP switch toggling (eMMC, XSPI, or USB DFU).
+- **Serial Downloader (USB):** Ensure Type-C USB assignment for **STM32CubeProgrammer**.
+- **FTDI Debugger:** Verify JTAG and UART assignments for the onboard FT2232HL.
 
-## Phase 6: Robotics & Low-Speed I/O
-- **CAN-FD:** Route the 3x FDCAN interfaces to [Texas Instruments TCAN1044AVDRQ1 Transceivers](../../references/datasheets/TCAN1044AVDRQ1.pdf). Use the separate `VIO` pin tied to 1.8V to interface natively with the STM32 without level shifters.
-- **Serial/I2C/SPI:** Route headers for sensors, IMUs, and external microcontrollers.
+## 6. eMMC and NOR Boot Storage
+- Verify **SDMMC2** for the 64GB eMMC 5.1 interface.
+- Verify **XSPI** assignment for the Quad-SPI W25Q256JV NOR flash (3.3V IO bank).
 
-## Phase 7: Power Delivery (Power Budget & PMIC)
-Power is purposely designed **last**. We cannot finalize the power architecture until we have selected the RAM, eMMC, PHYs, and external IO, because their voltage levels influence the total power budget.
-- **Consolidate Voltage Rails:** Analyze the voltage requirements of all selected chips (e.g., 1.8V, 3.3V) and consolidate them to reduce the BOM count.
-- **Power Budgeting & Simulation:** Calculate the maximum current draw across all rails, establish a power budget, and simulate the thermal load.
-- **Core PMIC Selection:** Select the core PMIC (e.g., **STPMIC25**) to handle the strict power-up/power-down sequencing required by the STM32MP257. *(See [AN5727: How to use STPMIC25](https://www.st.com/resource/en/application_note/an5727-how-to-use-stpmic25-for-a-wall-adapter-powered-application-on-stm32mp25-mpus-stmicroelectronics.pdf))*
-- **Decoupling:** Map out the exact placement of local decoupling capacitors for the BGA power rails.
+## 7. PCIe / USB Shared-PHY Verification
+Configure the shared 5 Gbit/s high-speed PHY:
+- Allocate to **PCIe Gen2 x1** for the M.2 Key-M Slot.
+- Verify fallback to **USB 2.0 High-Speed** for the Type-C port.
+
+## 8. Ethernet / MIPI / CAN / Low-Speed IO Verification
+- **Ethernet:** Allocate pins for dual Gigabit Ethernet MACs (RGMII 1.8V to DP83867 PHYs).
+- **MIPI:** Assign MIPI-CSI (Camera) and MIPI-DSI (Display) to standard FFC connectors. Assign 24-bit RGB to the Sil9022A HDMI Bridge.
+- **CAN-FD:** Verify FDCAN pin allocation for the 3x TCAN1044A transceivers.
+
+## 9. Clock-Tree Validation
+Use CubeMX to validate internal PLLs, external crystal frequencies, and clock distribution to all active peripherals.
+
+## 10. Exported Pin Assignment Freeze
+Export the final validated pinout CSV and Device Tree inputs from CubeMX. These become configuration-controlled design inputs.
+
+## 11. Power Architecture Finalization
+Analyze the voltage requirements of all verified IO banks. Select the core PMIC (e.g., **STPMIC25**) to handle power-up/power-down sequencing. Simulate thermal loads.
+
+## 12. KiCad Schematic Capture
+Translate the frozen CubeMX pin assignments, power requirements, and peripheral datasheets into formal schematics.
+
+## 13. PCB Layout / SI
+Perform layout, impedance matching, and Signal Integrity (SI) analysis. Determine the final PCB layer count based on comprehensive routing density constraints.

@@ -81,18 +81,19 @@ flowchart TD
 | Category | Requirement |
 |---|---|
 | **Operating System** | Linux required |
-| **RAM** | Absolute minimum 512 MB; preferred 2–8+ GB |
+| **RAM** | Target 4 GB LPDDR4 |
 | **CPU** | Multi-core 64-bit application processor |
 | **AI** | Hardware accelerator strongly preferred |
 | **GPU** | Hardware graphics/compute preferred |
 | **Real-Time** | Integrated RT core preferred; external MCU remains an option |
 | **Storage** | eMMC required (64GB+) for OS; NVMe SSD supported via expansion slot |
-| **PCIe** | Single Gen3 lane required. Must be routed to a modular M.2 slot for external AI accelerators, GPUs, or NVMe SSDs |
-| **USB** | USB 3.0 strongly preferred |
+| **PCIe** | Single Gen2 x1 lane required. Must be routed to a modular M.2 slot for external AI accelerators, GPUs, or NVMe SSDs |
+| **USB** | USB 2.0 / High-Speed supported (USB 3 SuperSpeed PHY is allocated to PCIe) |
 | **Ethernet** | ≥1 GbE; multiple ports, TSN, 2.5/10GbE desirable |
+| **Wireless** | Wi-Fi (802.11ac) & Bluetooth 5.0 required (via SDIO) |
 | **CAN** | CAN-FD strongly preferred |
-| **Camera** | MIPI CSI strongly preferred |
-| **Display** | HDMI / DP / eDP / MIPI DSI desirable |
+| **Camera** | MIPI CSI required (Raspberry Pi-compatible 15/22-pin FFC) |
+| **Display** | HDMI port (via RGB Bridge) AND MIPI DSI (Raspberry Pi-compatible FFC) required |
 | **General I/O** | UART, SPI, I²C, GPIO, PWM |
 | **Advanced I/O** | I3C, ADC, hardware timers/encoder interfaces desirable |
 | **Power** | Low-power and high-performance operating modes desirable |
@@ -107,8 +108,8 @@ flowchart TD
 
 ## Current Design Status
 
-The project has completed **Phase 2 — Select Processing Architecture**, pivoting from the i.MX 95 to officially lock in the **STMicroelectronics STM32MP257**
-We are now moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
+The project has completed **Phase 2 — Select Processing Architecture**, pivoting from the i.MX 95 to officially lock in the **STMicroelectronics STM32MP257**.
+We are now verifying the hardware architecture in STM32CubeMX before moving into hardware schematic capture based on the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).
 Please see the [Decision Log](docs/decisions/decision-log.md) for a record of the architectural trade-offs.
 
 ## SoC Selection
@@ -124,7 +125,7 @@ For a detailed comparison of all evaluated candidates, see the [SoC Candidates D
 
 ## Repository Structure
 
-To keep navigation simple while in the architecture phase, the repository is currently flattened into a documentation-first structure. Directories for `hardware/` (KiCad files) and `linux/` (Device Trees) will be generated as we progress through the design sequence.
+To keep navigation simple while in the architecture phase, the repository is currently flattened into a documentation-first structure. Directories for `hardware/` (KiCad files, CubeMX) and `linux/` (Device Trees) will be populated as we progress through the design sequence.
 
 - [docs/architecture/](docs/architecture/) - High-level system design, stackup constraints, and block diagrams.
 - [docs/requirements/](docs/requirements/) - Mission parameters and system constraints.
@@ -136,22 +137,23 @@ To keep navigation simple while in the architecture phase, the repository is cur
 - **Phase 0** — Define Mission *(Complete)*
 - **Phase 1** — Freeze High-Level Requirements *(Complete)*
 - **Phase 2** — Select Processing Architecture *(Complete)*
-- **Phase 3** — Select Memory / Storage *(In Progress)*
-- **Phase 4** — Define High-Speed I/O (Ethernet, PCIe, USB, MIPI)
-- **Phase 5** — Define Robotics I/O (CAN-FD, Serial, PWM, I2C)
-- **Phase 6** — Define Power Architecture (Budgeting, Consolidation, PMIC)
-- **Phase 7** — Define Mechanical Form Factor
-- **Phase 8** — Preliminary Stackup / SI Study
-- **Phase 9** — Schematic Capture
-- **Phase 10** — PCB Placement / Routing
-- **Phase 11** — Design Review
-- **Phase 12** — Fabrication / Assembly
-- **Phase 13** — Power Bring-Up
-- **Phase 14** — Bootloader / DDR Bring-Up
-- **Phase 15** — Linux BSP Bring-Up
-- **Phase 16** — Peripheral Validation
-- **Phase 17** — AI / Robotics Software
-- **Phase 18** — System Validation
+- **Phase 3** — Select Memory / Storage *(Complete)*
+- **Phase 4** — Define High-Speed I/O (Ethernet, PCIe, USB, MIPI) *(Complete)*
+- **Phase 5** — Define Robotics I/O (CAN-FD, Serial, PWM, I2C) *(Complete)*
+- **Phase 6** — STM32CubeMX Platform Verification
+- **Phase 7** — Define Power Architecture (Budgeting, Consolidation, PMIC)
+- **Phase 8** — Define Mechanical Form Factor
+- **Phase 9** — Preliminary Stackup / SI Study
+- **Phase 10** — Schematic Capture
+- **Phase 11** — PCB Placement / Routing
+- **Phase 12** — Design Review
+- **Phase 13** — Fabrication / Assembly
+- **Phase 14** — Power Bring-Up
+- **Phase 15** — Bootloader / DDR Bring-Up
+- **Phase 16** — Linux BSP Bring-Up
+- **Phase 17** — Peripheral Validation
+- **Phase 18** — AI / Robotics Software
+- **Phase 19** — System Validation
 
 *Note: For the detailed step-by-step schematic capture roadmap, see the [Hardware Design Sequence](docs/architecture/hardware-design-sequence.md).*
 

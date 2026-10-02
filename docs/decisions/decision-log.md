@@ -2,10 +2,10 @@
 
 ## ADR-001 — Main Processor Selection
 
-**Status:** Accepted
+**Status:** Superseded by ADR-002
 
 ### Context
-The project requires a central compute architecture to unify application processing, real-time control, AI inference, and robotics I/O.
+*(Historical)* The project requires a central compute architecture to unify application processing, real-time control, AI inference, and robotics I/O.
 
 ### Requirements
 - Linux support
@@ -43,10 +43,10 @@ How it satisfies the requirements:
 
 ## ADR-002 — Pivot from i.MX 95 to i.MX 8M Plus
 
-**Status:** Accepted
+**Status:** Superseded by ADR-003
 
 ### Context
-While attempting to begin Phase 3 (Memory / Storage) and Phase 1 (Boot Strapping) hardware design around the NXP i.MX 95, we discovered a fatal flaw in our assumptions regarding documentation availability and supply chain.
+*(Historical)* While attempting to begin Phase 3 (Memory / Storage) and Phase 1 (Boot Strapping) hardware design around the NXP i.MX 95, we discovered a fatal flaw in our assumptions regarding documentation availability and supply chain.
 
 ### The Problem
 1. **The NDA Wall:** The i.MX 95 is so new that NXP has placed the critical Hardware Design Guide and full Reference Manuals behind a secure corporate portal that requires a Non-Disclosure Agreement (NDA) and corporate account approval to access. It is impossible to design an open-source hardware board without a publicly accessible hardware design guide (for DDR trace length matching, impedance, and power sequencing rules).
@@ -91,7 +91,7 @@ NXP parts require expensive companion PMICs, and the total system BOM cost for a
 
 ### Consequences
 - **Positive:** We permanently escape the NXP documentation firewall. The system becomes more economic, and we gain 3x CAN-FD (up from 2x on the 8M Plus). The A35 cores are extremely power efficient.
-- **Negative:** None. The STM32MP257 is a perfect fit for this universal robotics controller.
+- **Negative:** None. The STM32MP257 is a suitable choice for this universal robotics controller.
 
 ---
 
@@ -111,7 +111,7 @@ With the core processor locked to the STM32MP257, we needed to select specific p
    - *Why:* Gigabit RGMII routing is notoriously difficult because of strict timing requirements between the clock and data lines. The DP83867 features highly programmable internal RX/TX delays, allowing us to fix trace-length mismatch issues in software. It natively supports 1.8V RGMII IO and has mature mainline Linux kernel support.
 
 3. **LPDDR4 System Memory: Micron MT53E1G32D2FW-046 IT:A (4GB)**
-   - *Why:* A single-chip 32-bit Point-to-Point topology keeps the PCB routing to 6 layers. 4GB provides massive headroom for AI models and ROS2 containers. (A 2GB variant, MT53E512M32D1ZW, is an acceptable fallback depending on LCSC stock at the time of manufacturing).
+   - *Why:* A single-chip 32-bit Point-to-Point topology minimizes PCB routing complexity. 4GB provides significant headroom for AI models and ROS2 containers. (A 2GB variant, MT53E512M32D1ZW, is an acceptable fallback depending on LCSC stock at the time of manufacturing).
 
 4. **eMMC Storage: FORESEE FEMDRW064G-88A19 (64GB)**
    - *Why:* The single PCIe Gen2 lane is reserved for an M.2 expansion slot (AI accelerators or NVMe), meaning the board cannot rely on a hardwired NVMe SSD for the root OS. A 64GB eMMC 5.1 chip provides ample built-in storage for a heavy Linux rootfs.
@@ -127,34 +127,34 @@ With the core processor locked to the STM32MP257, we needed to select specific p
 
 ## ADR-005 - LPDDR4 Fly-By Topology and Temperature Grade Trade-Offs
 
+**Status:** Superseded by ADR-006
+
+### Context
+*(Historical)* Initially, it was believed a single 4GB 32-bit memory module was unavailable or too expensive, leading to a proposed dual-chip fly-by topology.
+
+### Decision
+*(Superseded)* This decision proposed a fly-by topology using two 16-bit memory chips, claiming it would force an 8-layer PCB.
+
+---
+
+## ADR-006 - LPDDR4 Point-to-Point Architecture
+
 **Status:** Accepted
 
 ### Context
-Initially, we aimed to restrict the LPDDR4 routing to a strict **Point-to-Point** topology using a single 4GB 32-bit memory module. This minimizes PCB complexity. However, standard single-chip 32-bit 4GB LPDDR4 modules are often expensive and have volatile stock levels on global distributors like LCSC. The user demanded the highest possible RAM capacity (4GB to 8GB) using the cheapest, most readily available parts.
+ADR-005 proposed a dual-chip fly-by topology for the LPDDR4 memory. However, the STM32MP257 architecture supports a simplified, high-speed point-to-point interface. A dual-device fly-by topology adds unnecessary routing complexity, signal integrity risks, and unsupported claims about mandatory 8-layer PCBs. 
 
 ### Decision
-We are abandoning the single-chip constraint in favor of a **Fly-By Topology using two parallel 16-bit memory chips**. 
+**We are formally locking the LPDDR4 architecture to a single-device, 32-bit point-to-point topology.**
 
-Depending on budget and LCSC stock at the time of manufacturing, the board can be populated with either:
-- **4GB Total:** 2x 2GB (16-bit) chips (e.g., Micron MT53E512M32D1ZW)
-- **8GB Total:** 2x 4GB (16-bit) chips (e.g., Micron MT53E1G32D2FW or similar high-density 16-bit modules)
-
-Furthermore, we are explicitly selecting **Industrial Temperature Grade (IT: -40C to +95C)** over cheaper Commercial grades, given the thermal realities of robotics enclosures and the heat generated by the onboard 1.35 TOPS NPU.
-
-### The Trade-Off Analysis
-
-#### 1. Topology: 1x 4GB (Point-to-Point) vs. 2x 2GB (Fly-By)
-*   **The Single 4GB Module (Point-to-Point):**
-    *   *Pros:* Extremely easy PCB routing. A 32-bit point-to-point connection fits comfortably on a cheap 6-layer PCB. Signal integrity is inherently better because there are no stub reflections on the Address/Command (ACC) bus.
-    *   *Cons:* High cost. 32-bit single-die 4GB packages are often premium-priced or suffer from supply chain shortages.
-*   **The Dual 2GB Modules (Fly-By):**
-    *   *Pros:* 2GB 16-bit LPDDR4 chips are incredibly cheap and produced in massive volumes for smartphones and basic embedded devices. Using two of them to achieve 4GB (or two 4GB chips to achieve 8GB) is significantly more cost-effective.
-    *   *Cons (The Complexity Tax):* Routing a Fly-By topology requires daisy-chaining the ACC clock lines through the first RAM chip and into the second, while keeping trace lengths perfectly matched to within picoseconds. This massive routing density almost certainly breaks our 6-layer PCB constraint, forcing us into an **8-layer stackup**. The added cost of an 8-layer PCB offsets some of the savings from buying cheaper RAM chips.
-
-#### 2. Temperature Grade (T-Grade): Commercial (WT) vs. Industrial (IT)
-*   *The Trade-off:* We could select 'WT' (Extended Commercial: -25C to +85C) to save a few dollars. However, the STM32MP257 runs dual Cortex-A35s, a Cortex-M33, and an AI NPU inside a single package. In a sealed robotics chassis operating outdoors or in a factory, internal ambient temperatures can easily exceed 70C.
-*   *The Verdict:* We are locking in **IT-grade (-40C to +95C)**. The slight increase in BOM cost is mandatory to prevent catastrophic memory corruption and kernel panics when the robot operates under high thermal loads.
+The target memory configuration is:
+- **Topology:** Point-to-point (single-device)
+- **Interface:** 32-bit, single-rank
+- **Target Part:** Micron MT53E1G32D2FW (or exact 32-bit 4 GB equivalent)
+- **Capacity:** 32 Gbit (4 GB total)
+- **Temperature Grade:** Industrial Grade (-40C to +95C) is still targeted due to thermal requirements.
 
 ### Consequences
-- **Positive:** We achieve a massive 4GB (or up to 8GB) of highly-reliable, industrial-grade system RAM using heavily stocked, economic 16-bit chips.
-- **Negative:** The PCB designer must execute complex Fly-By length matching across two memory chips, and we are forced into an 8-layer JLCPCB stackup.
+- **Positive:** Point-to-point routing drastically simplifies the PCB layout and improves signal integrity. We avoid the complex length-matching required for a dual-device fly-by topology on the Address/Command (ACC) bus.
+- **Positive:** We eliminate the false constraint that memory alone forces an 8-layer PCB. Final layer count will be determined by comprehensive SI analysis and routing density, not an incorrect memory topology.
+- **Negative:** Reliance on a single 32-bit 4GB package limits fallback options if the specific package faces supply chain shortages.

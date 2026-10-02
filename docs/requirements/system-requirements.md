@@ -61,6 +61,34 @@ These external demands act as strict constraints on the central processing archi
 | Open 
 |
 
+| HSI-002 
+| System shall provide an HDMI display output (via native or PHY/Bridge) 
+| MUST 
+| Inspection 
+| Open 
+|
+
+| HSI-003 
+| System shall provide a native MIPI DSI display interface utilizing a Raspberry Pi-compatible FFC connector 
+| MUST 
+| Inspection 
+| Open 
+|
+
+| CAM-001 
+| System shall provide a MIPI CSI-2 camera interface utilizing a Raspberry Pi-compatible FFC connector 
+| MUST 
+| Inspection 
+| Open 
+|
+
+| COM-001 
+| System shall provide integrated Wi-Fi and Bluetooth connectivity 
+| MUST 
+| Test 
+| Open 
+|
+
 | RIO-001 
 | CAN-FD strongly preferred 
 | SHOULD 

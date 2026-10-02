@@ -75,7 +75,7 @@ We size the regulators to ensure they can handle the absolute maximum worst-case
     *   STM32MP257 `VDDGPU`: ~1500mA peak
 
 **Calculations Conclusion:**
-Every single rail draws less than 2.3 Amps absolute peak. Since our universal regulator (MP2315S) is rated for **3.0 Amps continuous**, we have massive headroom on every rail without needing to upgrade to larger ICs. 
+Every single rail draws less than 2.3 Amps absolute peak. Since our universal regulator (MP2315S) is rated for **3.0 Amps continuous**, we have sufficient headroom on every rail without needing to upgrade to larger ICs. 
 
 Total system power is ~18.8 Watts, which pulls roughly ~1.5 Amps from a 12V battery.
 
@@ -97,5 +97,5 @@ We will restrict the decoupling and bulk capacitors to a maximum of 4 distinct p
 4.  **22 µF 0603 10V:** Universal output bulk capacitor for all 8 regulators.
 
 ### Thermals
-*   **Distributed Heat:** By abandoning a single PMIC, we prevent a massive localized "hotspot". The 8 regulators will be physically distributed around the perimeter of the STM32MP257, spreading the thermal load evenly across the PCB's copper planes.
+*   **Distributed Heat:** By abandoning a single PMIC, we prevent a significant localized "hotspot". The 8 regulators will be physically distributed around the perimeter of the STM32MP257, spreading the thermal load evenly across the PCB's copper planes.
 *   **Vias:** Each regulator's exposed GND pad will have a 2x2 grid of thermal vias tying it to the internal ground layers.

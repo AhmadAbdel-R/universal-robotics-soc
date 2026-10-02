@@ -5,8 +5,8 @@ To keep manufacturing costs low and avoid exotic HDI PCB fabrication, we are tar
 
 However, the STM32MP257 system requires multiple high-speed interfaces, each with different controlled impedance targets:
 - **LPDDR4:** 40-ohm Single-Ended (SE), 80-ohm Differential (Diff)
-- **PCIe Gen3:** 85-ohm or 100-ohm Diff
-- **USB 3.0:** 90-ohm Diff
+- **PCIe Gen2:** 85-ohm or 100-ohm Diff
+- **USB 3.0 / USB 2.0:** 90-ohm Diff
 - **Ethernet (RGMII):** 50-ohm SE
 - **MIPI CSI/DSI:** 100-ohm Diff
 
@@ -23,4 +23,4 @@ As established in our design philosophy, we must find the "spec common ground".
 To further simplify the stackup and Signal Integrity (SI) constraints:
 - **Topology:** We will use a **Point-to-Point** topology. 
 - **Component:** We will select a **single, 32-bit LPDDR4 package** (e.g., a 200-ball dual-channel chip) rather than two 16-bit chips.
-- **Why:** Routing a single RAM chip point-to-point on a 6-layer board is drastically simpler than calculating fly-by or T-branch routing for two separate RAM chips, heavily reducing cross-talk and reflection risks.
+- **Why:** Routing a single RAM chip point-to-point is drastically simpler than calculating fly-by or T-branch routing for two separate RAM chips, heavily reducing cross-talk and reflection risks. Final layer count remains subject to comprehensive SI analysis and overall routing density.
