@@ -13,112 +13,63 @@ These external demands act as strict constraints on the central processing archi
 ## Formal Requirements
 
 
-| ID 
-| Requirement 
-| Priority 
-| Verification 
-| Status 
-|
-
-|---
-|---
-|---
-|---
-|---
-|
-
-| SYS-001 
-| Platform shall support Linux 
-| MUST 
-| Boot Test 
-| Open 
-|`n
-| SYS-002 
-| All BOM components MUST be natively sourced from the LCSC catalog to ensure low-cost JLCPCB assembly 
-| MUST 
-| BOM Review 
-| Open 
-|
-
-| MEM-001 
-| System shall support ≥512 MB RAM 
-| MUST 
-| Inspection / Boot Test 
-| Open 
-|
-
-| PWR-001 
-| Low-power and high-performance operating modes desirable 
-| SHOULD 
-| Measurement 
-| Open 
-|
-
-| HSI-001 
-| At least one PCIe interface strongly preferred 
-| SHOULD 
-| Inspection 
-| Open 
-|
-
-| HSI-002 
-| System shall provide an HDMI display output (via native or PHY/Bridge) 
-| MUST 
-| Inspection 
-| Open 
-|
-
-| HSI-003 
-| System shall provide a native MIPI DSI display interface utilizing a Raspberry Pi-compatible FFC connector 
-| MUST 
-| Inspection 
-| Open 
-|
-
-| CAM-001 
-| System shall provide a MIPI CSI-2 camera interface utilizing a Raspberry Pi-compatible FFC connector 
-| MUST 
-| Inspection 
-| Open 
-|
-
-| COM-001 
-| System shall provide integrated Wi-Fi and Bluetooth connectivity 
-| MUST 
-| Test 
-| Open 
-|
-
-| RIO-001 
-| CAN-FD strongly preferred 
-| SHOULD 
-| Test 
-| Open 
-|
-
-| PCB-001 
-| Initial target approximately 6–10 layers 
-| MUST 
-| Inspection 
-| Open 
-|
-
-*(More to be added as architecture solidifies)*
+| ID | Requirement | Priority | Verification | Status |
+|---|---|---|---|---|
+| SYS-001 | Platform shall support Linux | MUST | Boot Test | Open |
+| SYS-002 | All BOM components MUST be natively sourced from the LCSC catalog to ensure low-cost JLCPCB assembly | MUST | BOM Review | Open |
+| MEM-001 | Target 4 GB LPDDR4 | MUST | Inspection | Open |
+| PCB-001 | Initial target approximately 6–10 layers | MUST | Inspection | Open |
+| **SENSOR** | | | | |
+| SEN-001 | Onboard IMU | MUST | Inspection | Open |
+| SEN-002 | Onboard Magnetometer | MUST | Inspection | Open |
+| SEN-003 | External Magnetometer Option | MUST | Inspection | Open |
+| SEN-004 | Onboard Barometer | MUST | Inspection | Open |
+| SEN-005 | Optional Shock Sensor (High-G) | SHOULD | Inspection | Open |
+| SEN-006 | Clean Sensor Power Rail (LDO) | MUST | Inspection | Open |
+| **MOTOR** | | | | |
+| MOT-001 | Four deterministic motor outputs (PWM / DShot / bidirectional) | MUST | Test | Open |
+| MOT-002 | ESC telemetry input | MUST | Test | Open |
+| MOT-003 | Battery voltage monitoring | MUST | Test | Open |
+| MOT-004 | Current monitoring | MUST | Test | Open |
+| **ACTUATOR** | | | | |
+| ACT-001 | Incremental encoder interface (A/B/Z) | MUST | Test | Open |
+| ACT-002 | Absolute encoder support | MUST | Test | Open |
+| ACT-003 | STEP / DIR interface | MUST | Test | Open |
+| ACT-004 | Resolver expansion support | SHOULD | Inspection | Open |
+| ACT-005 | Load-cell expansion support | SHOULD | Inspection | Open |
+| ACT-006 | Drive fault / enable support | MUST | Test | Open |
+| **INDUSTRIAL** | | | | |
+| IND-001 | RS-485 interface | MUST | Test | Open |
+| IND-002 | IO-Link Master port | MUST | Test | Open |
+| IND-003 | Isolated CAN-FD option | SHOULD | Inspection | Open |
+| IND-004 | 24-V industrial digital input | MUST | Test | Open |
+| IND-005 | Protected 24-V output | MUST | Test | Open |
+| IND-006 | Optional ±10 V / 4–20 mA expansion | SHOULD | Inspection | Open |
+| **WIRELESS** | | | | |
+| WIR-001 | Integrated Wi-Fi (Dual-Band) | MUST | Test | Open |
+| WIR-002 | Integrated Bluetooth | MUST | Test | Open |
+| WIR-003 | PCB / external antenna development path | MUST | Inspection | Open |
+| **NAVIGATION** | | | | |
+| NAV-001 | GNSS / GPS UART interface | MUST | Test | Open |
+| NAV-002 | PPS timing input | MUST | Test | Open |
+| NAV-003 | ELRS / CRSF UART interface | MUST | Test | Open |
+| **DISPLAY/CAM** | | | | |
+| DIS-001 | MIPI DSI Display | MUST | Inspection | Open |
+| DIS-002 | HDMI output (via Bridge) | MUST | Inspection | Open |
+| CAM-001 | MIPI CSI Camera interface | MUST | Inspection | Open |
+| **USB** | | | | |
+| USB-001 | USB 2.0 High-Speed Recovery / Device | MUST | Test | Open |
+| USB-002 | USB 2.0 High-Speed Host | MUST | Test | Open |
+| USB-003 | PCIe / USB3 COMBOPHY shared constraint | MUST | Inspection | Open |
+| **EXPANSION** | | | | |
+| EXP-001 | External I2C/I3C | MUST | Test | Open |
+| EXP-002 | External SPI | MUST | Test | Open |
+| EXP-003 | Environmental / CO2 expansion | SHOULD | Inspection | Open |
+| EXP-004 | Rugged industrial connector variants | MUST | Inspection | Open |
 
 ## Open Numerical Requirements
 
 - **maximum board dimensions**: TBD
 - **standardized mounting-hole pattern**: TBD
-- **maximum processor cost**: TBD
-- **maximum complete BOM**: TBD
 - **maximum power consumption**: TBD
-- **idle power target**: TBD
 - **maximum component height**: TBD
-- **target operating temperature**: TBD
-- **number of camera interfaces**: TBD
-- **minimum PCIe lane count**: TBD
-- **minimum USB count**: TBD
-- **minimum CAN count**: TBD
-- **target RAM**: TBD
-- **target storage**: TBD
-- **thermal limits**: TBD

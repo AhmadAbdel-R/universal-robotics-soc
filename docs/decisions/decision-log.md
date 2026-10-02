@@ -158,3 +158,58 @@ The target memory configuration is:
 - **Positive:** Point-to-point routing drastically simplifies the PCB layout and improves signal integrity. We avoid the complex length-matching required for a dual-device fly-by topology on the Address/Command (ACC) bus.
 - **Positive:** We eliminate the false constraint that memory alone forces an 8-layer PCB. Final layer count will be determined by comprehensive SI analysis and routing density, not an incorrect memory topology.
 - **Negative:** Reliance on a single 32-bit 4GB package limits fallback options if the specific package faces supply chain shortages.
+
+---
+
+## ADR-007 - Robotics and Industrial I/O Architecture
+
+**Status:** Accepted
+
+### Context
+To elevate the board from a generic SBC to a Universal Robotics Controller, a comprehensive set of deterministic I/O, environmental sensors, and rugged industrial interfaces must be defined and carefully partitioned between the Linux application domain and the real-time microcontroller domain.
+
+### Decisions
+
+1. **Onboard Sensors & Clean Power:**
+   - **IMU:** TDK InvenSense ICM-42688-P, communicating over a dedicated SPI bus to avoid latency from high-traffic peripherals.
+   - **Magnetometer:** MEMSIC MMC5983MA on a secondary SPI bus. An external magnetometer option is also provided for high-interference environments (e.g., UAVs).
+   - **Barometer:** Bosch BMP581 on the secondary SPI bus.
+   - **Clean Sensor Power:** A dedicated 3.3V LDO (TI TPS7A2033PDBVR) generates `3V3_SENSOR` exclusively for sensitive low-power sensors, heavily isolated from PMIC and actuator noise.
+
+2. **Cortex-M33 Real-Time Ownership:**
+   The Cortex-M33 real-time core will natively own latency-critical interfaces, explicitly including:
+   - IMU and secondary sensor SPI buses
+   - Four deterministic motor outputs (PWM/DShot)
+   - Incremental encoder inputs (A/B/Z) and STEP/DIR interfaces
+   - ExpressLRS (CRSF) UART receiver
+   - ESC telemetry and analog motor/battery monitoring
+   - Real-time CAN-FD
+
+3. **Actuator & Motor Control:**
+   - The board will supply four M33-controlled motor outputs (M1-M4) compatible with PWM and DShot.
+   - High-power 3-phase inverters (e.g., DRV8353) and resolver analog front-ends (e.g., AD2S1210) will be offloaded to optional daughterboards to keep the compute PCB manageable.
+
+4. **Industrial I/O:**
+   - The board will feature ruggedized RS-485 (via TI THVD1450) and a protected 24-V digital I/O philosophy (IEC 61131-2 compatible inputs/outputs) for field wiring.
+   - We prefer daughterboards for specialized isolated analog requirements (e.g., ±10 V / 4–20 mA via AD4111).
+
+### Consequences
+- **Positive:** By deliberately offloading high-power electronics and specialized analog front-ends to daughterboards while retaining the fundamental real-time logic and sensors on the motherboard, we achieve a compact, robust, and highly scalable universal controller.
+- **Negative:** Increased layout complexity to isolate the `3V3_SENSOR` rail and carefully route SPI buses away from the RF and PMIC zones.
+
+---
+
+## Active / Proposed Evaluations (Not Yet Locked)
+
+The following architectures and components are currently under evaluation and are **NOT** yet marked as Accepted:
+
+- **Exact Wi-Fi Module:** Murata Type 2AE (LBEE5PK2AE-564) is preferred, but final lock depends on LCSC stock and lifecycle verification.
+- **Exact HDMI Bridge:** Evaluating Analog Devices ADV7535 vs. Lontium LT8912B.
+- **Exact IO-Link PHY:** ST L6360 is preferred but subject to verification.
+- **Exact Resolver AFE:** AD2S1210 daughterboard interface proposed.
+- **Exact Industrial ADC:** AD4111 daughterboard interface proposed.
+- **Exact Rugged Connector SKUs:** JST-GH, M12, Molex Micro-Fit, and Harwin Gecko are preferred families, but exact SKUs are pending mechanical constraints.
+- **Exact Isolated CAN Implementation:** TI ISO1042 proposed for the optional isolated channel.
+- **Exact 24-V I/O Count:** Target is 2-4 inputs and 2 outputs, subject to final board space.
+- **Exact STM32 Peripheral Instances:** Pending STM32CubeMX alternate-function muxing and pin-conflict analysis.
+- **Exact Antenna Geometry:** Pending PCB outline, stackup, and enclosure definition.
