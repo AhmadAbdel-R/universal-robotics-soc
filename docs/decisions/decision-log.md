@@ -204,12 +204,87 @@ To elevate the board from a generic SBC to a Universal Robotics Controller, a co
 The following architectures and components are currently under evaluation and are **NOT** yet marked as Accepted:
 
 - **Exact Wi-Fi Module:** Murata Type 2AE (LBEE5PK2AE-564) is preferred, but final lock depends on LCSC stock and lifecycle verification.
-- **Exact HDMI Bridge:** Evaluating Analog Devices ADV7535 vs. Lontium LT8912B.
+- **Exact HDMI Bridge:** Evaluating Analog Devices ADV7535 vs. Lontium LT8912B vs. Sil9022A.
 - **Exact IO-Link PHY:** ST L6360 is preferred but subject to verification.
 - **Exact Resolver AFE:** AD2S1210 daughterboard interface proposed.
 - **Exact Industrial ADC:** AD4111 daughterboard interface proposed.
 - **Exact Rugged Connector SKUs:** JST-GH, M12, Molex Micro-Fit, and Harwin Gecko are preferred families, but exact SKUs are pending mechanical constraints.
 - **Exact Isolated CAN Implementation:** TI ISO1042 proposed for the optional isolated channel.
 - **Exact 24-V I/O Count:** Target is 2-4 inputs and 2 outputs, subject to final board space.
-- **Exact STM32 Peripheral Instances:** Pending STM32CubeMX alternate-function muxing and pin-conflict analysis.
+- **Exact STM32 Peripheral Instances:** Base allocation frozen in ADR-008; ~74 unassigned GPIOs pending Phase 10 voltage domain review.
 - **Exact Antenna Geometry:** Pending PCB outline, stackup, and enclosure definition.
+
+---
+
+## ADR-008 — STM32MP257 Platform Pinout & Peripheral Mapping Freeze (CubeMX Pass 1)
+
+### Status: Accepted
+**Date:** 2026-10-03  
+**Deciders:** Lead Systems Architect
+
+### Context
+Following the architecture lock of the STM32MP257FAIx (TFBGA436), a comprehensive alternate-function multiplexing and context-isolation pass was completed in STM32CubeMX (`cubemx.ioc`). The board requires concurrent operation of high-bandwidth Linux OS peripherals (Dual GbE RGMII, PCIe Gen2, USB2 OTG & Host, CSI-2, DSI/LTDC, Wi-Fi SDIO) alongside hard real-time robotics peripherals owned by the Cortex-M33 (3x CAN-FD, 3x SPI, 4x Timers/DShot, 6x UARTs, UCPD1, ICACHE).
+
+### Decisions
+1. **Dual Independent RGMII:** ETH1 and ETH2 are pinned out with 14 dedicated lines each (PA/PC/PF/PH for ETH1; PC/PF/PG for ETH2). ETHSW is disabled. Both MACs operate with independent MDC/MDIO lines. PHY interrupts are handled via external GPIOs.
+2. **COMBOPHY Exclusivity:** The shared 5 Gbps COMBOPHY is allocated exclusively to PCIe Gen2 x1 Root Complex (M.2 Key-M). USB3DR is constrained to USB 2.0 High-Speed mode, preventing hardware pin conflicts.
+3. **Display & Camera Pipelines:** LTDC is configured in RGB888 mode feeding internal DSIHOST (4 data lanes, Video Mode) targeting an off-chip DSI-to-HDMI bridge. CSI-2 feeds DCMIPP with Pipe 1 active.
+4. **M33 Real-Time Peripheral Freeze:**
+   - SPI1: Dedicated IMU (ICM-42688-P) on PE0/PF12/PI5.
+   - SPI2: Sensor bus (MMC5983MA, BMP581) on PB0/PB6/PB2.
+   - SPI3: Expansion SPI on PB7/PB10/PE2.
+   - FDCAN1, 2, 3: Pinned out for 3x TCAN1044A transceivers.
+   - TIM1: 4-channel ESC/DShot output engine (PD8-PD11).
+   - TIM2: Quadrature encoder A/B input (PH5/PF15).
+   - TIM3: 4-channel auxiliary PWM output (PI6/PI7/PF13/PF14).
+   - TIM4: Industrial STEP pulse generator (PI10).
+   - USART6: RS-485 with hardware DE (PJ5/PJ8/PG5).
+   - UART4 (GNSS on PK4/PI15), UART5 (CRSF/ELRS on PG9/PG10), UART7 (Expansion on PD3/PH3).
+5. **Cortex-M33 ICACHE:** Enabled in 2-way set associative mode for deterministic execution.
+6. **Unassigned GPIOs (~74 pins):** Signals including `STEP_DIR`, `ENCODER_Z`, `GNSS_PPS`, `INA229_ALERT`, `CAN_STB`, `BMS_FAULT/ENABLE`, and Wi-Fi/BT/HDMI control pins remain unassigned until power bank voltages (VDDIO1-4) are verified.
+
+### Consequences
+- **Positive:** Full peripheral pin mapping established without resource collisions; dual independent GbE confirmed viable; M33 real-time determinism secured.
+- **Negative:** ~74 GPIOs require ball assignment in Phase 10 after voltage domain verification.
+
+---
+
+## ADR-009 — A35-TD Boot Architecture: Primary eMMC Boot with Secondary OCTOSPI1 Storage
+
+### Status: Accepted
+**Date:** 2026-10-03  
+**Deciders:** Lead Systems Architect
+
+### Context
+The platform implements an A35 Trusted Domain (A35-TD) boot hierarchy. The physical board incorporates a soldered 64 GB eMMC 5.1 (SDMMC2) and a 32 MB Quad-SPI NOR Flash (OCTOSPI1). We evaluated whether TF-A BL2 should boot from NOR or eMMC.
+
+### Decisions
+1. **Primary Boot Device Lock:** Primary boot is formally locked to soldered eMMC (`BOOTDEVICE_LABELS = "emmc"`). The platform does not use an SD card socket.
+2. **TF-A & Device Tree Reconciliation:** To prevent build/runtime failures where TF-A is compiled for eMMC while lacking the `&sdmmc2` node, the TF-A device tree (`tf-a/stm32mp257f-cubemx-mx.dts`) is patched in its protected USER CODE sections with SDMMC2 pinctrl and device node.
+3. **OCTOSPI1 Role:** OCTOSPI1 remains available as secondary non-volatile storage for bootloader recovery, board calibration, and fail-safe firmware.
+
+### Consequences
+- **Positive:** Single, coherent, high-speed primary boot path from soldered eMMC; no external SD card dependency; NOR preserved for recovery.
+- **Action Item:** Next CubeMX GUI pass will check `Cortex-A35 Secure FSBL` under SDMMC2 Context Management to synchronize `.ioc` metadata natively.
+
+---
+
+## ADR-010 — Battery Management (BMS) Strategy & Digital Telemetry Architecture
+
+### Status: Accepted
+**Date:** 2026-10-03  
+**Deciders:** Lead Systems Architect
+
+### Context
+The system supports 2S through 8S battery packs (up to ~34 V steady state). High-current battery systems pose extreme thermal and safety challenges if cell balancing is placed on a compact compute motherboard.
+
+### Decisions
+1. **External Pack BMS:** Full multi-cell balancing and high-current protection switches remain on the external smart battery pack or dedicated power daughterboard.
+2. **Motherboard Ingress Protection:** Motherboard implements primary fusing, solid-state ideal-diode reverse polarity protection, surge clamping, and inrush control.
+3. **Digital Telemetry via INA229:** Battery voltage, current, and power monitoring are assigned to a dedicated Texas Instruments INA229 (85 V, 20-bit delta-sigma monitor) communicating via SPI/I2C to the Cortex-M33, with an `INA229_ALERT` interrupt line. Internal STM32 ADCs are intentionally not committed to primary power monitoring.
+4. **BMS Supervisory Interface:** M33 manages `BMS_FAULT` (input) and `BMS_ENABLE` (output), plus optional smart pack communications over FDCAN3 or UART7.
+5. **Actuator Current Isolation:** The high-current actuator bus (`ACT_PWR_RAW`) is strictly separated from compute PMIC input (`VIN_SYS`).
+
+### Consequences
+- **Positive:** Protects compute electronics from motor back-EMF; eliminates thermal dissipation of balancing circuits on compute PCB; provides microsecond digital fault detection.
+

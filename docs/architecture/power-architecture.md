@@ -112,6 +112,28 @@ Possible regulated actuator rails: 5V, 6V, 7.4V, 8.4V, 12V, configurable.
 **THEORY**: Motors/actuators may return energy.
 **DESIGN CHOICE**: System must account for reverse-current blocking, bus voltage rise, TVS/clamp, braking resistor, ESC behavior, and battery absorption.
 
+## Battery Management (BMS) & Digital Telemetry Architecture
+
+**DESIGN CHOICE**: The platform supports **2S through 8S battery systems** under the following architectural guidelines:
+
+1. **External Pack BMS Preferred:** The compute motherboard does **NOT** integrate cell-balancing circuitry or high-current BMS switching FETs by default. High-current cell balancing and individual cell chemistry management are delegated to an external smart battery pack or dedicated power daughterboard.
+2. **Motherboard Ingress Protection:** The motherboard implements:
+   - Primary catastrophic fuse protection.
+   - Solid-state reverse-polarity protection / ideal diode controller (e.g., LM7480 class).
+   - Bidirectional transient voltage suppressors (TVS) sized for hot-plug and inductive flyback.
+   - Electronic fuse / inrush current limiter for compute rails.
+3. **Dedicated Digital Telemetry (INA229):**
+   - High-voltage, high-accuracy power monitoring is provided by a dedicated digital power monitor (Texas Instruments **INA229** or equivalent 85 V, 20-bit delta-sigma monitor).
+   - Interfaces via SPI or I2C directly to the Cortex-M33 real-time domain.
+   - Features a dedicated hardware alert output (`INA229_ALERT`) connected to an M33 EXTI line for microsecond-scale overcurrent / under-voltage detection.
+   - **Architectural Exclusion:** Internal STM32 ADC channels are intentionally **NOT** committed to primary battery/current sensing to avoid noise injection, reference drift, and high-voltage resistive divider routing near sensitive analog pins.
+4. **BMS Hardware Supervisory Interface:**
+   - `BMS_FAULT`: Active-low hardware alert input from external BMS to Cortex-M33, triggering immediate actuator safe-state or emergency disconnect.
+   - `BMS_ENABLE`: Active-high output from Cortex-M33 to external pack contactor/switch.
+   - **Smart BMS Communications:** Optional telemetry over `FDCAN3` (isolated CAN) or `UART7` for battery state-of-charge (SoC), cell voltages, and cycle health.
+   - **Graceful Shutdown:** Cortex-M33 signals Cortex-A35 via IPC (RPMsg) to execute clean filesystem sync and unmount prior to pack depletion.
+5. **Actuator Isolation:** The high-current actuator path (`ACT_PWR_RAW`) is physically separated from the compute PMIC input (`VIN_SYS`), preventing motor inrush and back-EMF from coupling into core compute rails.
+
 ## Power Tree Detail
 
 ```mermaid

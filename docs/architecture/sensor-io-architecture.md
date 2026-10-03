@@ -76,7 +76,8 @@ flowchart TD
         UART_ESC[UART] --> ESCT[ESC Telemetry]
         UART_ELRS[UART] --> ELRS[CRSF Receiver]
         TIM_ENC[Timer / GPIO] --> ENC[A/B/Z / STEP/DIR]
-        ADC_MOT[ADC] --> VBAT[Battery / Current]
+        SPI_PWR[Digital Telemetry SPI/I2C] --> INA[INA229 Power Monitor]
+        INA --> VBAT[Pack Voltage, Current & Power]
     end
     subgraph A35[Cortex-A35 Linux Domain]
         SDIO --> WIFI[Murata Type 2AE Wi-Fi]

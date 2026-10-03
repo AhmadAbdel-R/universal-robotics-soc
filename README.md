@@ -112,10 +112,13 @@ Please see the [Decision Log](docs/decisions/decision-log.md) for a record of th
 |------|--------|
 | Processor: STM32MP257FAI3 | **LOCKED** |
 | DDR: 4 GB LPDDR4 point-to-point x32 | **LOCKED** |
-| eMMC: 64 GB | **LOCKED** |
+| Primary Boot: 64 GB eMMC (A35-TD) | **LOCKED (ADR-009)** |
+| Secondary Storage: 32 MB XSPI NOR | **LOCKED (ADR-009)** |
 | PCIe/USB3 COMBOPHY: assigned to PCIe Gen2 x1 | **LOCKED** |
 | Battery input class: 2S–8S | **LOCKED** |
+| Battery telemetry: INA229 digital monitor (SPI/I2C) | **LOCKED (ADR-010)** |
 | Compute / actuator power split | **LOCKED** |
+| Core peripheral pin allocation | **FROZEN (ADR-008)** (~74 GPIOs pending Phase 10) |
 | Power architecture (discrete vs PMIC) | PROPOSED |
 | PowerPath IC selection | PROPOSED |
 | Actuator current specification | NEEDS CALCULATION |
@@ -124,7 +127,6 @@ Please see the [Decision Log](docs/decisions/decision-log.md) for a record of th
 | PDN design | NEEDS SIMULATION |
 | Regulator stability | NEEDS SIMULATION |
 | Antenna geometry | NEEDS PCB OUTLINE + MEASUREMENT |
-| CubeMX pin allocation | NEEDS CUBEMX VERIFICATION |
 
 ## Development Roadmap
 

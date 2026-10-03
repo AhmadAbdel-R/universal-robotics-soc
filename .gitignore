@@ -1,0 +1,33 @@
+# Eclipse / STM32CubeIDE caches and preferences
+.settings/
+*.prefs
+
+# Build artifacts
+Debug/
+Release/
+bin/
+obj/
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.axf
+*.log
+
+# Temporary and backup files
+*.bak
+*.tmp
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE directories
+.vscode/
+.idea/
