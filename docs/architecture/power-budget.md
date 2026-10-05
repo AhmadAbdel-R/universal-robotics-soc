@@ -7,10 +7,13 @@ To give us absolute hardware-level control over power sequencing and consolidate
 The board accepts a wide-voltage DC input (9V - 24V nominal) and generates every system voltage using the **exact same switching regulator IC**.
 
 ### The "One Regulator" Strategy
-We will use the **MPS MP2315S** (or equivalent, e.g., TI TPS54302) for every single power rail. 
+
+> **Note:** The MP2315S proposal outlined below has been superseded by the selection of the **TI TPS54561DPRR** (LCSC C180369) for its superior documentation and design support (see [ADR-011](../decisions/decision-log.md)). The following text reflects the initial architecture concept. Individual rail suitability, component values, and identical-BOM assumptions remain subject to verification using the new [TI SLVA477C Buck Calculation Guide](../calculations/buck-power-stage-ti-slva477c.md) and are not final.
+
+We previously proposed the **MPS MP2315S** (or equivalent, e.g., TI TPS54302) for every single power rail. 
 *   **Specs:** 4.5V to 24V Input, 3A Output, Synchronous Buck, TSOT23-8 Package.
 *   **Why it works:** It has a highly accurate **0.800V reference voltage (Vref)**, an Enable (EN) pin, and a Power Good (PG) pin. Because Vref is 0.800V, it can generate *any* voltage from 0.80V up to 5.0V simply by changing two feedback resistors.
-*   **BOM Consolidation:** We will place **8 identical MP2315S chips** on the board. They will all use the exact same input capacitors, output capacitors, and inductors. Only the two 0402 feedback resistors will change between them.
+*   **BOM Consolidation:** We intended to place **8 identical MP2315S chips** on the board. They would all use the exact same input capacitors, output capacitors, and inductors. Only the two 0402 feedback resistors will change between them.
 
 ### Regulator Allocation
 

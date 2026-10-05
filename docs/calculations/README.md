@@ -17,6 +17,9 @@ This directory contains the engineering calculations and analysis framework for 
 - [ ] source mux
 
 ### REGULATORS ([regulator-design.md](./regulator-design.md))
+
+Reference: [TI SLVA477C buck power-stage calculation guide](./buck-power-stage-ti-slva477c.md), including the original TI PDF link and TPS54561 design checks.
+
 - [ ] duty cycle
 - [ ] inductor
 - [ ] ripple

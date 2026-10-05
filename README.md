@@ -93,6 +93,7 @@ flowchart TD
 | **INDUSTRIAL I/O** | RS-485, IO-Link, 24V I/O, isolated CAN | [Industrial I/O](docs/architecture/industrial-io.md) |
 | **COMPONENTS** | Engineering cards for every major IC | [docs/components/](docs/components/) |
 | **CALCULATIONS** | Design calculations: power, PDN, regulators, protection, high-current | [docs/calculations/](docs/calculations/) |
+| **BUCK CALCULATIONS** | TI SLVA477C reference, power-stage equations and TPS54561 checks | [Buck Calculation Guide](docs/calculations/buck-power-stage-ti-slva477c.md) |
 | **SIMULATIONS** | Simulation framework: power, SI, PI, thermal | [hardware/simulations/](hardware/simulations/) |
 | **PCB / SI / PI** | Stackup, impedance, vias, return paths, fiber weave | [docs/pcb-si-pi/](docs/pcb-si-pi/) |
 | **THERMAL** | Thermal budget, SoC cooling, regulator/connector thermal | [docs/thermal/](docs/thermal/) |

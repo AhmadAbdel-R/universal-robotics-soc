@@ -288,3 +288,22 @@ The system supports 2S through 8S battery packs (up to ~34 V steady state). High
 ### Consequences
 - **Positive:** Protects compute electronics from motor back-EMF; eliminates thermal dissipation of balancing circuits on compute PCB; provides microsecond digital fault detection.
 
+---
+
+## ADR-011 - Universal Buck Regulator IC Selection
+
+### Status: Accepted
+**Date:** 2026-10-05
+**Deciders:** Lead Systems Architect
+
+### Context
+The initial power architecture proposed using the MPS MP2315S as a universal switching regulator across all rails for extreme BOM consolidation. However, we need robust design documentation, predictable loop compensation parameters, and verifiable sizing references for all corner cases.
+
+### Decisions
+1. **IC Selection:** The primary buck regulator IC is formally changed from MP2315S to **Texas Instruments TPS54561DPRR** (LCSC C180369).
+2. **Reference Design:** All power stage calculations will follow the **TI SLVA477C** Application Note.
+3. **Pending Verification:** While the IC is selected for its superior documentation and design support, individual rail suitability, loop compensation, and the goal of extreme BOM consolidation (identical inductors/capacitors across all rails) remain subject to rigorous engineering verification and calculation. They are not final until explicitly proven.
+
+### Consequences
+- **Positive:** We gain access to high-quality, comprehensive TI documentation and well-defined equations for stability and power-stage calculations.
+- **Action Item:** Recalculate every voltage rail strictly against the new SLVA477C-based calculation guide to verify component selections.

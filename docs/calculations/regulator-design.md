@@ -1,5 +1,9 @@
 # VRM / Regulator Design Calculations
 
+## TI Buck Calculation Reference
+
+Use the [SLVA477C calculation guide](buck-power-stage-ti-slva477c.md) for the source PDF, equations, source discrepancy note and TPS54561-specific checks. The selected buck IC is **TPS54561DPRR**; individual rail designs remain subject to verification.
+
 ## Regulator Design Worksheet Template
 
 For every regulator designed in the system, fill out this worksheet:
